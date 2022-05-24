@@ -1,9 +1,15 @@
+version: '3.1'
+
 services:
   mysql:
     image: mysql:8.0.1
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: docker-dev
-  
+      MYSQL_DATABASE: mbs_project_2022 
+    volumes:
+      - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
+
   phpmyadmin:
     image: phpmyadmin
     ports:
