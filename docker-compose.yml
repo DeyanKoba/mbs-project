@@ -1,0 +1,14 @@
+services:
+  mysql:
+    image: mysql:8.0.1
+    environment:
+      MYSQL_ROOT_PASSWORD: docker-dev
+  
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      UPLOAD_LIMIT: 300000000
+    links:
+      - mysql:db
