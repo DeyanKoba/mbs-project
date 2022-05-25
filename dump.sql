@@ -4,89 +4,88 @@ CREATE DATABASE mbs_project_2022;
 
 USE mbs_project_2022;
 
-DROP TABLE IF EXISTS persona;
-CREATE TABLE persona (
+DROP TABLE IF EXISTS person;
+CREATE TABLE person (
     id int AUTO_INCREMENT PRIMARY KEY,
-    nome varchar(255) NOT NULL,
-    cognome VARCHAR(255) NOT NULL,
-    data_nascita DATE NOT NULL,
-    impiego VARCHAR(255),
-    salario_annuo INT unsigned NOT NULL
+    name varchar(255) NOT NULL,
+    surname VARCHAR(255) NOT NULL,
+    birthdate DATE NOT NULL,
+    employment VARCHAR(255),
+    annual_salary INT unsigned NOT NULL
 );
 
-DROP TABLE IF EXISTS recapito_telefonico;
-CREATE TABLE recapito_telefonico (
+DROP TABLE IF EXISTS phone_number;
+CREATE TABLE phone_number (
     id int AUTO_INCREMENT PRIMARY KEY,
-    telefono varchar(255) NOT NULL,
-    persona_id int,
-    FOREIGN KEY(persona_id) REFERENCES persona(id)
+    number varchar(255) NOT NULL,
+    person_id int,
+    FOREIGN KEY(person_id) REFERENCES person(id)
 );
 
-DROP TABLE IF EXISTS banca;
-CREATE TABLE banca (
+DROP TABLE IF EXISTS bank;
+CREATE TABLE bank (
     id int AUTO_INCREMENT PRIMARY KEY,
-    indirizzo varchar(255) NOT NULL,
-    civico varchar(5) NULL,
-    cap varchar(5) NOT NULL,
-    citta varchar(255) NOT NULL,
-    provincia varchar(255) NOT NULL,
-    piva varchar(255) NOT NULL,
-    codice_rea varchar(255) NOT NULL
+    address varchar(255) NOT NULL,
+    address_number varchar(5) NULL,
+    postal_code varchar(5) NOT NULL,
+    city varchar(255) NOT NULL,
+    province varchar(255) NOT NULL,
+    vat_code varchar(255) NOT NULL
 );
 
-DROP TABLE IF EXISTS immobile;
-CREATE TABLE immobile (
+DROP TABLE IF EXISTS property;
+CREATE TABLE property (
     id int AUTO_INCREMENT PRIMARY KEY,
-    indirizzo varchar(255) NOT NULL,
-    civico varchar(5) NULL,
-    cap varchar(5) NOT NULL,
-    citta varchar(255) NOT NULL,
-    provincia varchar(255) NOT NULL,
-    valore int unsigned NOT NULL 
+    address varchar(255) NOT NULL,
+    address_number varchar(5) NULL,
+    postal_code varchar(5) NOT NULL,
+    city varchar(255) NOT NULL,
+    province varchar(255) NOT NULL,
+    value int unsigned NOT NULL 
 );
 
 DROP TABLE IF EXISTS mbs;
 CREATE TABLE mbs (
     id int AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL
 );
 
-DROP TABLE IF EXISTS mutuo;
-CREATE TABLE mutuo (
+DROP TABLE IF EXISTS mortgage;
+CREATE TABLE mortgage (
     id int AUTO_INCREMENT PRIMARY KEY,
-    importo int unsigned NOT NULL,
-    tasso_interesse_annuo tinyint unsigned NOT NULL,
-    immobile_id int NOT NULL,
-    banca_id int NOT NULL,
-    data_sottoscrizione DATE NOT NULL,
-    durata_anni tinyint unsigned NOT NULL,
+    amount int unsigned NOT NULL,
+    annual_interest_rate tinyint unsigned NOT NULL,
+    property_id int NOT NULL,
+    bank_id int NOT NULL,
+    date_of_signing DATE NOT NULL,
+    maturity_years tinyint unsigned NOT NULL,
     mbs_id int NULL,
-    FOREIGN KEY (immobile_id) REFERENCES immobile(id),
-    FOREIGN KEY (banca_id) REFERENCES banca(id),
+    FOREIGN KEY (property_id) REFERENCES property(id),
+    FOREIGN KEY (bank_id) REFERENCES bank(id),
     FOREIGN KEY (mbs_id) REFERENCES mbs(id)
 );
 
-DROP TABLE IF EXISTS intestatario;
-CREATE TABLE intestatario (
-    mutuo_id int NOT NULL,
-    persona_id int NOT NULL,
-    FOREIGN KEY (mutuo_id) REFERENCES mutuo(id),
-    FOREIGN KEY (persona_id) REFERENCES persona(id)
+DROP TABLE IF EXISTS accountholder;
+CREATE TABLE accountholder (
+    mortgage_id int NOT NULL,
+    person_id int NOT NULL,
+    FOREIGN KEY (mortgage_id) REFERENCES mortgage(id),
+    FOREIGN KEY (person_id) REFERENCES person(id)
 );
 
-DROP TABLE IF EXISTS rata;
+DROP TABLE IF EXISTS mortgage_payment;
 CREATE TABLE rata (
     id int AUTO_INCREMENT PRIMARY KEY,
-    importo int unsigned NOT NULL,
-    data_scadenza DATE NOT NULL,
-    mutuo_id int,
-    FOREIGN KEY(mutuo_id) REFERENCES mutuo(id)
+    amount int unsigned NOT NULL,
+    due_date DATE NOT NULL,
+    mortgage_id int,
+    FOREIGN KEY(mortgage_id) REFERENCES mortgage(id)
 );
 
 DROP TABLE IF EXISTS mbs_tranche;
 CREATE TABLE mbs_tranche (
     id int AUTO_INCREMENT PRIMARY KEY,
     mbs_id int,
-    percentuale tinyint unsigned NOT NULL,
+    percentage tinyint unsigned NOT NULL,
     maturity_years tinyint unsigned NOT NULL
 );
