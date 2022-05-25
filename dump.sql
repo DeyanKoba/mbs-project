@@ -22,15 +22,23 @@ CREATE TABLE phone_number (
     FOREIGN KEY(person_id) REFERENCES person(id)
 );
 
+DROP TABLE IF EXISTS location;
+CREATE TABLE location (
+    zip_code varchar(5) PRIMARY KEY,
+    city varchar(255) NOT NULL,
+    state varchar(255) NOT NULL
+);
+
 DROP TABLE IF EXISTS bank;
 CREATE TABLE bank (
     id int AUTO_INCREMENT PRIMARY KEY,
     address varchar(255) NOT NULL,
     address_number varchar(5) NULL,
-    postal_code varchar(5) NOT NULL,
+    zip_code varchar(5) NOT NULL,
     city varchar(255) NOT NULL,
     province varchar(255) NOT NULL,
-    vat_code varchar(255) NOT NULL
+    vat_code varchar(255) NOT NULL,
+    FOREIGN KEY(zip_code) REFERENCES location(zip_code)
 );
 
 DROP TABLE IF EXISTS property;
@@ -38,10 +46,9 @@ CREATE TABLE property (
     id int AUTO_INCREMENT PRIMARY KEY,
     address varchar(255) NOT NULL,
     address_number varchar(5) NULL,
-    postal_code varchar(5) NOT NULL,
-    city varchar(255) NOT NULL,
-    province varchar(255) NOT NULL,
-    value int unsigned NOT NULL 
+    zip_code varchar(5) NOT NULL,
+    value int unsigned NOT NULL,
+    FOREIGN KEY(zip_code) REFERENCES location(zip_code)
 );
 
 DROP TABLE IF EXISTS mbs;
