@@ -35,8 +35,7 @@ CREATE TABLE bank (
     address varchar(255) NOT NULL,
     address_number varchar(5) NULL,
     zip_code varchar(5) NOT NULL,
-    city varchar(255) NOT NULL,
-    province varchar(255) NOT NULL,
+    name varchar(5) NOT NULL,
     vat_code varchar(255) NOT NULL,
     FOREIGN KEY(zip_code) REFERENCES location(zip_code)
 );
