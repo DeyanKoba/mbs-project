@@ -32,10 +32,10 @@ CREATE TABLE location (
 DROP TABLE IF EXISTS bank;
 CREATE TABLE bank (
     id int AUTO_INCREMENT PRIMARY KEY,
+    name varchar(255) NOT NULL,
     address varchar(255) NOT NULL,
     address_number varchar(5) NULL,
     zip_code varchar(5) NOT NULL,
-    name varchar(5) NOT NULL,
     vat_code varchar(255) NOT NULL,
     FOREIGN KEY(zip_code) REFERENCES location(zip_code)
 );
