@@ -79,19 +79,23 @@ CREATE TABLE accountholder (
     FOREIGN KEY (person_id) REFERENCES person(id)
 );
 
-DROP TABLE IF EXISTS mortgage_payment;
-CREATE TABLE rata (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    amount int unsigned NOT NULL,
-    due_date DATE NOT NULL,
-    mortgage_id int,
-    FOREIGN KEY(mortgage_id) REFERENCES mortgage(id)
-);
-
 DROP TABLE IF EXISTS mbs_tranche;
 CREATE TABLE mbs_tranche (
     id int AUTO_INCREMENT PRIMARY KEY,
     mbs_id int,
     percentage tinyint unsigned NOT NULL,
-    maturity_years tinyint unsigned NOT NULL
+    maturity_years tinyint unsigned NOT NULL,
+    FOREIGN KEY(mbs_id) REFERENCES mbs(id)
+);
+
+DROP TABLE IF EXISTS mortgage_payment;
+CREATE TABLE mortgage_payment (
+    id int AUTO_INCREMENT PRIMARY KEY,
+    mortgage_id int NOT NULL,
+    amount int unsigned NOT NULL,
+    month_reference tinyint unsigned NULL,
+    year_reference year unsigned NULL,
+    due_date date NULL,
+    payment_date date NULL,
+    FOREIGN KEY(mortgage_id) REFERENCES mortgage(id)
 );
