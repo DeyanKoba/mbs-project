@@ -4,6 +4,8 @@ services:
   mysql:
     image: mysql:8.0.1
     restart: always
+    ports:
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: docker-dev
       MYSQL_DATABASE: mbs_project_2022 
