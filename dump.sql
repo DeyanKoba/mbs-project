@@ -113,5 +113,35 @@ BEGIN
         /
         ( POWER( (1 + (annual_interest_rate / 100 / 12)), (12 * years)) - 1)
     , 2);
-END$$
-DELIMITER ; 
+END $$
+
+CREATE FUNCTION get_mortgage_monthly_payment_to_income_ratio (
+    p_mortgage_id int
+)
+RETURNS decimal(5,4) DETERMINISTIC
+BEGIN
+	SELECT 
+    	amount,
+        annual_interest_rate,
+        maturity_years
+        INTO
+        @mortgage_value,
+        @mortgage_annual_interest_rate,
+        @mortgage_maturity_years
+    FROM
+    	mortgage
+    WHERE id = p_mortgage_id;
+    
+    SELECT
+    	SUM(annual_salary) / 12
+    INTO @accountholders_total_monthly_income 
+    FROM person
+    	INNER JOIN accountholder ON person.id = accountholder.person_id
+        INNER JOIN mortgage ON accountholder.mortgage_id = mortgage.id
+    WHERE mortgage.id = p_mortgage_id
+    GROUP BY mortgage.id;
+ 	SET @monthly_payment_to_income_ratio = get_mortgage_monthly_payment(@mortgage_value, @mortgage_annual_interest_rate, @mortgage_maturity_years) / @accountholders_total_monthly_income;   
+ 	
+   	RETURN @monthly_payment_to_income_ratio;
+END $$
+DELIMITER ;
