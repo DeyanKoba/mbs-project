@@ -92,10 +92,26 @@ DROP TABLE IF EXISTS mortgage_payment;
 CREATE TABLE mortgage_payment (
     id int AUTO_INCREMENT PRIMARY KEY,
     mortgage_id int NOT NULL,
-    amount int unsigned NOT NULL,
+    amount decimal(10,2) unsigned NOT NULL,
     month_reference tinyint unsigned NULL,
     year_reference year unsigned NULL,
     due_date date NULL,
     payment_date date NULL,
     FOREIGN KEY(mortgage_id) REFERENCES mortgage(id)
 );
+
+DELIMITER $$
+CREATE FUNCTION get_mortgage_monthly_payment (
+    mortgage_amount int,
+    annual_interest_rate decimal(10,2),
+    years tinyint
+) 
+RETURNS decimal(10,2) DETERMINISTIC
+BEGIN 
+    RETURN ROUND(
+        (mortgage_amount * (annual_interest_rate / 100 / 12) * POWER( (1 + (annual_interest_rate / 100 / 12) ), (12 * years) ))
+        /
+        ( POWER( (1 + (annual_interest_rate / 100 / 12)), (12 * years)) - 1)
+    , 2);
+END$$
+DELIMITER ; 
