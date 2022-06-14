@@ -115,6 +115,26 @@ BEGIN
     , 2);
 END $$
 
+CREATE FUNCTION get_mortgage_surplus_payments_ratio (
+    p_mortgage_id int
+) RETURNS decimal(5,4) DETERMINISTIC
+BEGIN
+    SELECT
+        SUM(mortgage_payment.amount) / mortgage.amount
+    INTO @surplus_ratio
+    FROM mortgage
+        LEFT JOIN mortgage_payment ON mortgage.id = mortgage_payment.mortgage_id
+    WHERE
+        due_date IS NULL
+        AND
+        mortgage.id = p_mortgage_id
+    GROUP BY
+        mortgage.id;
+    
+    RETURN @surplus_ratio;
+    
+END $$
+
 CREATE FUNCTION get_mortgage_payment_average_days_delay (
     p_mortgage_id int
 )
