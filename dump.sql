@@ -183,4 +183,64 @@ BEGIN
  	
    	RETURN @monthly_payment_to_income_ratio;
 END $$
+
+CREATE FUNCTION get_dates_difference_in_years(
+    past_date date,
+    future_date date
+) RETURNS int DETERMINISTIC
+BEGIN
+    RETURN TIMESTAMPDIFF(YEAR, past_date, future_date);
+END $$
+
+CREATE FUNCTION get_mortgage_amount_percentage_risk_due_to_accountholders_age(
+    p_mortgage_id int
+) RETURNS decimal(5,4) DETERMINISTIC 
+BEGIN
+    SELECT
+        SUM(
+            get_mortgage_monthly_payment(
+                mortgage.amount,
+                annual_interest_rate,
+                maturity_years
+            ) 
+            *
+            12
+            *
+            (annual_salary / total)
+            *
+            GREATEST(
+                0,
+                get_dates_difference_in_years(
+                    birthdate,
+                    DATE_ADD(
+                        date_of_signing,
+                        INTERVAL maturity_years YEAR
+                    )
+                ) - 80
+            ) / mortgage.amount
+        )
+    INTO @amount_at_risk
+    FROM
+        mortgage
+    INNER JOIN accountholder ON mortgage_id = mortgage.id
+    INNER JOIN person ON person_id = person.id
+    INNER JOIN(
+        SELECT
+            mortgage.id AS id,
+            SUM(annual_salary) AS total
+        FROM
+            mortgage
+        INNER JOIN accountholder ON mortgage_id = mortgage.id
+        INNER JOIN person ON person_id = person.id
+        GROUP BY
+            mortgage.id
+    ) t1
+    ON
+        t1.id = mortgage.id  
+    WHERE mortgage.id = p_mortgage_id
+    GROUP BY mortgage.id;
+
+    RETURN @amount_at_risk;
+END $$
+
 DELIMITER ;
