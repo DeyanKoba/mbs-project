@@ -255,4 +255,28 @@ BEGIN
     RETURN amount_at_risk;
 END $$
 
+CREATE FUNCTION get_mortgage_rating(
+    p_mortgage_id int
+) RETURNS char(1) DETERMINISTIC
+BEGIN
+    DECLARE risk_percentage decimal(5,4);
+
+    SET risk_percentage
+    = 
+    (get_mortgage_monthly_payment_to_income_ratio(p_mortgage_id) * 0.35)
+    +
+    ((get_mortgage_payment_average_days_delay(p_mortgage_id) / 30) * 0.45)
+    +
+    (get_mortgage_amount_percentage_risk_due_to_accountholders_age(p_mortgage_id) * 0.10)
+    +
+    (get_mortgage_surplus_payments_ratio(p_mortgage_id) * 0.10);
+
+    RETURN 
+        CASE
+        WHEN risk_percentage < 0.15 THEN 'A'
+        WHEN risk_percentage >= 0.15 AND risk_percentage < 0.20 THEN 'B'
+        ELSE 'C'
+        END;
+END $$
+
 DELIMITER ;
