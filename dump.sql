@@ -119,9 +119,11 @@ CREATE FUNCTION get_mortgage_surplus_payments_ratio (
     p_mortgage_id int
 ) RETURNS decimal(5,4) DETERMINISTIC
 BEGIN
+    DECLARE surplus_ratio DECIMAL(5,4) DEFAULT 0;
+
     SELECT
         SUM(mortgage_payment.amount) / mortgage.amount
-    INTO @surplus_ratio
+    INTO surplus_ratio
     FROM mortgage
         LEFT JOIN mortgage_payment ON mortgage.id = mortgage_payment.mortgage_id
     WHERE
@@ -131,7 +133,7 @@ BEGIN
     GROUP BY
         mortgage.id;
     
-    RETURN @surplus_ratio;
+    RETURN COALESCE(surplus_ratio, 0);
     
 END $$
 
@@ -140,9 +142,11 @@ CREATE FUNCTION get_mortgage_payment_average_days_delay (
 )
 RETURNS decimal(5,4) DETERMINISTIC
 BEGIN
+    DECLARE average_delay TINYINT UNSIGNED DEFAULT 0;
+
     SELECT 
         AVG(GREATEST(0, payment_date - due_date))
-    INTO @average_delay
+    INTO average_delay
     FROM mortgage 
         LEFT JOIN mortgage_payment ON mortgage.id = mortgage_payment.mortgage_id
     WHERE
@@ -150,7 +154,7 @@ BEGIN
         AND
         mortgage.id = p_mortgage_id;
 
-    RETURN @average_delay;
+    RETURN average_delay;
         
 END $$
 
@@ -159,29 +163,35 @@ CREATE FUNCTION get_mortgage_monthly_payment_to_income_ratio (
 )
 RETURNS decimal(5,4) DETERMINISTIC
 BEGIN
+    DECLARE mortgage_value INT UNSIGNED DEFAULT 0;
+    DECLARE mortgage_annual_interest_rate DECIMAL(4,2) UNSIGNED DEFAULT 0;
+    DECLARE mortgage_maturity_years TINYINT(3) UNSIGNED DEFAULT 0;
+    DECLARE accountholders_total_monthly_income DECIMAL(7,2) DEFAULT 0;
+    DECLARE monthly_payment_to_income_ratio DECIMAL (4,2) DEFAULT 0;
+
 	SELECT 
     	amount,
         annual_interest_rate,
         maturity_years
         INTO
-        @mortgage_value,
-        @mortgage_annual_interest_rate,
-        @mortgage_maturity_years
+        mortgage_value,
+        mortgage_annual_interest_rate,
+        mortgage_maturity_years
     FROM
     	mortgage
     WHERE id = p_mortgage_id;
     
     SELECT
     	SUM(annual_salary) / 12
-    INTO @accountholders_total_monthly_income 
+    INTO accountholders_total_monthly_income 
     FROM person
     	INNER JOIN accountholder ON person.id = accountholder.person_id
         INNER JOIN mortgage ON accountholder.mortgage_id = mortgage.id
     WHERE mortgage.id = p_mortgage_id
     GROUP BY mortgage.id;
- 	SET @monthly_payment_to_income_ratio = get_mortgage_monthly_payment(@mortgage_value, @mortgage_annual_interest_rate, @mortgage_maturity_years) / @accountholders_total_monthly_income;   
+
+ 	RETURN get_mortgage_monthly_payment(mortgage_value, mortgage_annual_interest_rate, mortgage_maturity_years) / accountholders_total_monthly_income;   
  	
-   	RETURN @monthly_payment_to_income_ratio;
 END $$
 
 CREATE FUNCTION get_dates_difference_in_years(
@@ -196,6 +206,8 @@ CREATE FUNCTION get_mortgage_amount_percentage_risk_due_to_accountholders_age(
     p_mortgage_id int
 ) RETURNS decimal(5,4) DETERMINISTIC 
 BEGIN
+    DECLARE amount_at_risk decimal(5,4) UNSIGNED DEFAULT 0;
+
     SELECT
         SUM(
             get_mortgage_monthly_payment(
@@ -219,7 +231,7 @@ BEGIN
                 ) - 80
             ) / mortgage.amount
         )
-    INTO @amount_at_risk
+    INTO amount_at_risk
     FROM
         mortgage
     INNER JOIN accountholder ON mortgage_id = mortgage.id
@@ -240,7 +252,7 @@ BEGIN
     WHERE mortgage.id = p_mortgage_id
     GROUP BY mortgage.id;
 
-    RETURN @amount_at_risk;
+    RETURN amount_at_risk;
 END $$
 
 DELIMITER ;
