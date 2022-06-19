@@ -11,7 +11,9 @@ CREATE TABLE person (
     surname VARCHAR(255) NOT NULL,
     birthdate DATE NOT NULL,
     employment VARCHAR(255),
-    annual_salary INT unsigned NOT NULL
+    annual_salary INT unsigned NOT NULL,
+    CONSTRAINT is_over_18 CHECK TIMESTAMPDIFF(YEAR, birthdate, curdate()) >= 18,
+    CONSTRAINT is_less_than_100 CHECK TIMESTAMPDIFF(YEAR, birthdate, curdate()) < 100
 );
 
 DROP TABLE IF EXISTS phone_number;
@@ -60,7 +62,7 @@ DROP TABLE IF EXISTS mortgage;
 CREATE TABLE mortgage (
     id int AUTO_INCREMENT PRIMARY KEY,
     amount int unsigned NOT NULL,
-    annual_interest_rate tinyint unsigned NOT NULL,
+    annual_interest_rate decimal(4,2) unsigned NOT NULL,
     property_id int NOT NULL,
     bank_id int NOT NULL,
     date_of_signing DATE NOT NULL,
@@ -68,7 +70,9 @@ CREATE TABLE mortgage (
     mbs_id int NULL,
     FOREIGN KEY (property_id) REFERENCES property(id),
     FOREIGN KEY (bank_id) REFERENCES bank(id),
-    FOREIGN KEY (mbs_id) REFERENCES mbs(id)
+    FOREIGN KEY (mbs_id) REFERENCES mbs(id),
+    CONSTRAINT is_more_than_10000_dollars CHECK (amount >= 10000),
+    CONSTRAINT maturity_years_in_valid_range CHECK (maturity_years IN (10, 15, 20, 30))
 );
 
 DROP TABLE IF EXISTS accountholder;
@@ -97,10 +101,123 @@ CREATE TABLE mortgage_payment (
     year_reference year unsigned NULL,
     due_date date NULL,
     payment_date date NULL,
-    FOREIGN KEY(mortgage_id) REFERENCES mortgage(id)
+    FOREIGN KEY(mortgage_id) REFERENCES mortgage(id),
+    CONSTRAINT month_reference_in_valid_range CHECK (month_reference >= 1 AND month_reference <= 12),
+    CONSTRAINT month_and_year_reference_and_due_date_null_or_not CHECK (
+        (month_reference IS NULL AND year_reference IS NULL AND due_date IS NULL)
+        OR
+        (month_reference IS NOT NULL AND year_reference IS NOT NULL AND due_date IS NOT NULL)
+    )
 );
 
 DELIMITER $$
+
+CREATE TRIGGER check_mortgage_amount BEFORE INSERT ON mortgage
+FOR EACH ROW
+BEGIN
+    DECLARE property_value INT;
+    SELECT value INTO property_value FROM property WHERE id = NEW.property_id;
+    
+    IF NEW.amount > property_value THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Mortgage value cannot be more than the property value';
+    END IF;
+END $$
+
+CREATE TRIGGER check mortgage_date_of_signing BEFORE INSERT ON mortgage
+FOR EACH ROW
+BEGIN
+    IF TIMESTAMPDIFF(DAY, NEW.date_of_signing, curdate()) < 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Mortgage signing date cannot be in the future';
+    END IF;
+
+    IF TIMESTAMPDIFF(YEAR, NEW.date_of_signing, curdate()) > 5 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot insert a mortgage older than 5 years';
+    END IF;
+END $$
+
+CREATE TRIGGER check_mortgage_payment_dates BEFORE INSERT ON mortgage_payment
+FOR EACH ROW
+BEGIN
+    DECLARE mortgage_signing_date date;
+
+    IF NEW.month_reference IS NOT NULL AND NEW.year_reference IS NOT NULL AND NEW.due_date IS NOT NULL THEN
+        SELECT date_of_signing INTO mortgage_signing_date FROM mortgage WHERE id = NEW.mortgage_id;
+        
+        IF (NEW.year_reference > YEAR(curdate())) OR (NEW.year_reference = YEAR(curdate()) AND NEW.month_reference > MONTH(curdate())) THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The mortgage payment cannot refer to a future date';
+        END IF;
+
+        IF (NEW.year_reference < YEAR(mortgage_signing_date)) OR (NEW.year_reference = YEAR(mortgage_signing_date) AND NEW.month_reference < MONTH(mortgage_signing_date)) THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The mortgage payment cannot refer to a date before the mortgage signing date';
+        END IF;
+
+        IF NEW.due_date < mortgage_signing_date THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The mortgage payment due date cannot be before the mortgage signing date';
+        END IF;
+
+    END IF;
+
+    IF NEW.payment_date < mortgage_signing_date THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The mortgage payment cannot be made before signing date';
+    END IF;
+
+    IF NEW.payment_date > curdate() THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The mortgage payment cannot be made in a date in the future';
+    END IF;
+
+END $$
+
+CREATE TRIGGER mortgage_payment_not_over_total_to_pay BEFORE INSERT ON mortgage_payment
+FOR EACH ROW
+BEGIN
+    DECLARE extra_payments DECIMAL(9,2) DEFAULT 0;
+    DECLARE total_to_pay DECIMAL(9,2) DEFAULT 0;
+    DECLARE total_payed DECIMAL(9,2) DEFAULT 0;
+    DECLARE mortgage_amount INT DEFAULT 0;
+    DECLARE mortgage_annual_interest_rate DECIMAL(4,2) DEFAULT 0;
+    DECLARE mortgage_maturity_years TINYINT UNSIGNED DEFAULT 0;
+
+    SELECT 
+        amount,
+        annual_interest_rate,
+        maturity_years
+    INTO
+        mortgage_amount,
+        mortgage_annual_interest_rate,
+        mortgage_maturity_years
+    FROM
+        mortgage
+    WHERE
+        id = NEW.mortgage_id;
+
+    SELECT
+        COALESCE(SUM(amount), 0)
+    INTO
+        extra_payments
+    FROM
+        mortgage_payment
+    WHERE
+        due_date IS NULL
+        AND
+        mortgage_id = NEW.mortgage_id;
+
+    SELECT
+        get_mortgage_monthly_payment(mortgage_amount - extra_payments, mortgage_annual_interest_rate, mortgage_maturity_years)
+        *
+        12
+        *
+        mortgage_maturity_years
+    INTO
+        total_to_pay;
+
+    SELECT SUM(amount) INTO total_payed FROM mortgage_payment WHERE mortgage_id = NEW.mortgage_id AND due_date IS NOT NULL;
+
+    IF (total_to_pay - total_payed) < NEW.amount THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The mortgage payment cannot be more than the remaining amount to pay';
+    END IF;
+
+END $$
+
 CREATE FUNCTION get_mortgage_monthly_payment (
     mortgage_amount int,
     annual_interest_rate decimal(10,2),
