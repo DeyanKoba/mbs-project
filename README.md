@@ -27,6 +27,7 @@ Per il punto 4 si assume che la vita media si attesti ad 80 anni, per cui il cap
 Nel caso in cui un mutuo sia intestato a più di un soggetto e di questi solo alcuni siano a rischio di insolvenza per età, si terrà conto del rapporto del contributo al reddito di questi ultimi sul reddito totale dei cointestatari.
 
 Il fattore di rischio è quindi calcolato nel seguente modo:
+
 **(35%** • ***risultato al punto 1*) + (45%** • ***risultato al punto 2*) + (10%** • ***risultato al punto 3*) + (10%** • ***risultato al punto 4*)**
 
 Ogni MBS contiene in media dai 1000 ai 3000 mutui ed in una situazione normale è composto nel seguente modo:
