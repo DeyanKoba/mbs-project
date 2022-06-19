@@ -23,7 +23,9 @@ Il fattore di rischio è calcolato su 4 parametri con diverse incidenze:
 3. Rapporto tra versamenti in surplus ed il capitale concesso, incidenza del 10%
 4. Rapporto tra rate potenzialmente non incassabili dovute all'età del soggetto ed il capitale concesso, incidenza del 10%
 
-<br>
+Per il punto 4 si assume che la vita media si attesti ad 80 anni, per cui il capitale a rischio per età degli intestatari è la somma delle rate mensili dovute oltre il compimento dell'ottantesimo anno di età.
+Nel caso in cui un mutuo sia intestato a più di un soggetto e di questi solo alcuni siano a rischio di insolvenza per età, si terrà conto del rapporto del contributo al reddito di questi ultimi sul reddito totale dei cointestatari.
+
 Il fattore di rischio è quindi calcolato nel seguente modo:
 **(35% \* *risultato al punto 1*) + (45% \* *risultato al punto 2*) + (10% \* *risultato al punto 3*) + (10% \* *risultato al punto 4*)**
 
@@ -33,4 +35,13 @@ Ogni MBS contiene in media dai 1000 ai 3000 mutui ed in una situazione normale �
 * il restante da mutui di classe B e C
 
 <br>
-<br>
+### Azioni eseguibili sul database
+
+1. Inserire un mutuo acquistato ed i dati correlati ad esso, ovvero:
+    * storico dei pagamenti
+    * dati degli intestatari
+    * dati sulla proprietà per la quale è stato concesso il mutuo
+    * banca che ha rilasciato il mutuo
+2. Calcolare il rating di un mutuo
+3. Assegnazione di un mutuo ad un MBS
+4. Ottenere la composizione suddivisa per rischio di un MBS
