@@ -10,7 +10,7 @@ Un MBS, in breve, è un insieme di mutui raccolti in un "pacchetto", quest'ultim
 > [Mortgage Backed Security Definition](https://www.investopedia.com/terms/m/mbs.asp)
 
 <br>
-La banca d'investimento acquista in blocco dalle centinaia alle migliaia di mutui rilasciati da altre banche commerciali, ad ogni mutuo viene assegnata una valutazione di rischio che potrà essere 'A', 'B' oppure 'C';
+La banca d'investimento acquista in blocco, una volta l'anno, dai 1000 ai 3000 mutui rilasciati da altre banche commerciali, ad ogni mutuo viene assegnata una valutazione di rischio che potrà essere 'A', 'B' oppure 'C';
 
 * 'A' indica un mutuo per il quale si suppone un basso rischio di insolvenza
 * 'B' indica un rischio medio
@@ -27,7 +27,7 @@ Per il punto 4 si assume che la vita media si attesti ad 80 anni, per cui il cap
 Nel caso in cui un mutuo sia intestato a più di un soggetto e di questi solo alcuni siano a rischio di insolvenza per età, si terrà conto del rapporto del contributo al reddito di questi ultimi sul reddito totale dei cointestatari.
 
 Il fattore di rischio è quindi calcolato nel seguente modo:
-**(35% \* *risultato al punto 1*) + (45% \* *risultato al punto 2*) + (10% \* *risultato al punto 3*) + (10% \* *risultato al punto 4*)**
+**(35%** • ***risultato al punto 1*) + (45%** • ***risultato al punto 2*) + (10%** • ***risultato al punto 3*) + (10%** • ***risultato al punto 4*)**
 
 Ogni MBS contiene in media dai 1000 ai 3000 mutui ed in una situazione normale è composto nel seguente modo:
 
@@ -45,3 +45,23 @@ Ogni MBS contiene in media dai 1000 ai 3000 mutui ed in una situazione normale �
 2. Calcolare il rating di un mutuo
 3. Assegnazione di un mutuo ad un MBS
 4. Ottenere la composizione suddivisa per rischio di un MBS
+
+<br>
+### Analisi nel dettaglio
+
+Dalla banca d'investimenti ci vengono fornire le seguenti informazioni:
+
+La banca acquista mutui in blocco una volta l'anno, in quell'occasione tutti i mutui vengono inseriti all'interno del database con i relativi dati correlati;
+dichiara inoltre di non acquistare mai per politiche aziendali mutui più vecchi di 5 anni e che l'età media del mutuo acquistato si aggira attorno ai 2-3 anni dalla stipula.
+Circa l'85% dei mutui è intestato ad una persona singola ed il rimanente 15% a due persone.
+I pagamenti in surplus del mutuo solitamente vengono effettuati da clienti a rischio basso con una probabilità del 10%, per un numero medio di 1 versamento l'anno.
+
+Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mutui andiamo a stimare le dimensioni del database:
+
+| Entità | Numero di entità inserite ogni anno | Note |
+| ------ | ----------------------------------- | ---- |
+| Mutuo | 2000 |  |
+| Proprietà | 2000 | Una proprietà per mutuo |
+| Pagamento | 60000 | In base alle dichiarazioni l'età media del mutuo al momento dell'acquisto si aggira attorno ai 2-3 anni;<br>in questo caso si è presa in considerazione una durata di 30 mesi, moltiplicata per i 2000 mutui<br>porta a 60000 pagamenti ordinari. Ai 60000 pagamenti ordinari andrebbero sommati 400 pagamenti <br>in surplus ottenuti nel seguente modo:<br><br>80% di 2000 mutui = 1600 mutui di classe A<br>10% di probabilità che un mutuo di classe A effettui un pagamento in surplus = 160 mutui effettuano pagamenti in surplus<br>1 versamento l'anno di media su una durata media di 30 mesi = 400 versamenti in surplus totali<br><br>Quest'ultimo risultato è stato trascurato dato il rapporto di incidenza minore dell'1% sul numero complessivo di pagamenti |
+| Persone | 2300 | 85% di 2000 = 1700 mutui intestati ad una persona<br>15% di 2000 = 300 mutui intestati a due persone |
+| MBS | 1 |  |
