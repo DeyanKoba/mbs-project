@@ -56,6 +56,7 @@ La banca acquista mutui in blocco una volta l'anno, in quell'occasione tutti i m
 dichiara inoltre di non acquistare mai per politiche aziendali mutui più vecchi di 5 anni e che l'età media del mutuo acquistato si aggira attorno ai 2-3 anni dalla stipula.
 Circa l'85% dei mutui è intestato ad una persona singola ed il rimanente 15% a due persone.
 I pagamenti in surplus del mutuo solitamente vengono effettuati da clienti a rischio basso con una probabilità del 10%, per un numero medio di 1 versamento l'anno.
+Le banche commerciali dalle quale vengono acquistati i mutui sono una ventina.
 
 Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mutui andiamo a stimare le dimensioni del database:
 
@@ -65,4 +66,11 @@ Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mut
 | Proprietà | 2000 | Una proprietà per mutuo |
 | Pagamento | 60000 | In base alle dichiarazioni l'età media del mutuo al momento dell'acquisto si aggira attorno ai 2-3 anni;<br>in questo caso si è presa in considerazione una durata di 30 mesi, moltiplicata per i 2000 mutui<br>porta a 60000 pagamenti ordinari. Ai 60000 pagamenti ordinari andrebbero sommati 400 pagamenti <br>in surplus ottenuti nel seguente modo:<br><br>80% di 2000 mutui = 1600 mutui di classe A<br>10% di probabilità che un mutuo di classe A effettui un pagamento in surplus = 160 mutui effettuano pagamenti in surplus<br>1 versamento l'anno di media su una durata media di 30 mesi = 400 versamenti in surplus totali<br><br>Quest'ultimo risultato è stato trascurato dato il rapporto di incidenza minore dell'1% sul numero complessivo di pagamenti |
 | Persone | 2300 | 85% di 2000 = 1700 mutui intestati ad una persona<br>15% di 2000 = 300 mutui intestati a due persone |
+| Banca | 20 |  |
 | MBS | 1 |  |
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
