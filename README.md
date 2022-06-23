@@ -37,6 +37,11 @@ Ogni MBS in una situazione "normale" è composto nel seguente modo:
 * il restante da mutui di classe B e C
 
 <br>
+Di un mutuo si hanno i dati relativi al suo importo, il tasso d'interesse fisso annuo, la data in cui è stato stipulato, la durata in anni oltre ai dati della relativa proprietà per la quale è stato concesso il mutuo, gli intestatari e la banca che lo ha rilasciato.
+Di un intestatario si hanno a disposizione nome, cognome, data di nascita, salario annuo ed eventualmente impiego.
+Di una proprietà si ha il valore e l'indirizzo, mentre di una banca si ha nome, partita iva ed indirizzo.
+Per quanto riguarda i pagamenti si ha a disposizione il riferimento del mutuo per il quale è stato effettuato il versamento, l'importo del versamento, mese ed anno per il quale fa riferimento la rata, la data di scadenza e quella di versamento.
+
 ### Azioni eseguibili sul database
 
 1. Inserire un mutuo acquistato ed i dati correlati ad esso, ovvero:
@@ -49,7 +54,7 @@ Ogni MBS in una situazione "normale" è composto nel seguente modo:
 4. Ottenere la composizione percentuale suddivisa per rischio di un MBS
 
 <br>
-### Analisi nel dettaglio
+### Analisi della dimensione
 
 Dalla banca d'investimenti ci vengono fornire le seguenti informazioni:
 <br>
@@ -67,11 +72,28 @@ Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mut
 | Mutuo | 2000 |  |
 | Proprietà | 2000 | Una proprietà per mutuo |
 | Pagamento | 60000 | In base alle dichiarazioni l'età media del mutuo al momento dell'acquisto si aggira attorno ai 2-3 anni;<br>in questo caso si è presa in considerazione una durata di 30 mesi, moltiplicata per i 2000 mutui<br>porta a 60000 pagamenti ordinari. Ai 60000 pagamenti ordinari andrebbero sommati 400 pagamenti <br>in surplus ottenuti nel seguente modo:<br><br>80% di 2000 mutui = 1600 mutui di classe A<br>10% di probabilità che un mutuo di classe A effettui un pagamento in surplus = 160 mutui effettuano pagamenti in surplus<br>1 versamento l'anno di media su una durata media di 30 mesi = 400 versamenti in surplus totali<br><br>Quest'ultimo risultato è stato trascurato dato il rapporto di incidenza minore dell'1% sul numero complessivo di pagamenti |
-| Persone | 2300 | 85% di 2000 = 1700 mutui intestati ad una persona<br>15% di 2000 = 300 mutui intestati a due persone |
+| Persona | 2300 | 85% di 2000 = 1700 mutui intestati ad una persona<br>15% di 2000 = 300 mutui intestati a due persone |
 | Banca | 20 |  |
 | MBS | 1 |  |
 <br>
-<br>
+### Vincoli non esprimibili
+
+Da un'analisi del problema posto sorgono dei vincoli che non sono esprimibili:
+
+* L'importo minimo concesso come mutuo è di $ 10.000,00;
+* Una persona deve essere maggiorenne per poter stipulare o essere cointestatario di un mutuo;
+* L'importo concesso per un mutuo non può superare il valore del relativo immobile;
+* La durata ammissibile in anni di un mutuo può essere di 10, 15, 20 oppure 30 anni;
+* La data di stipula di un mutuo non può essere datata nel futuro ed allo stesso modo non può essere datata più di 5 anni nel passato + 1 mese di tempo calcolato come margine per permettere l'inserimento dei dati all'interno del gestionale dal momento dell'acquisto;
+* Un versamento non può essere datato nel futuro ed allo stesso modo non può essere datato prima della stipula di un mutuo;
+* Il periodo di riferimento di un pagamento non può essere antecedente la stipula del mutuo;
+* Il versamento per un mutuo non può eccedere la parte rimanente da saldare;
+
+Per quanto riguarda la tabella che accoglie i versamenti di un mutuo, vi sono dei vincoli particolari da considerare:
+inanzitutto nella tabella in questione vanno salvati sia i versamenti a saldo di una rata che i versamenti in surplus, per i pagamenti in surplus ovviamente non ha senso che vi sia indicata una data di scadenza oppure un periodo di riferimento.
+
+Non vengono posti vincoli sull'importo minimo del versamento in quanto alcune banche a fronte di un versamento in surplus potrebbero ricalcolare la rata mensile ed altre potrebbero semplicemente ricalcolare la data di estinzione del mutuo mantenendo l'importo delle rate invariato.
+
 <br>
 <br>
 <br>
