@@ -45,20 +45,21 @@ Ogni MBS in una situazione "normale" è composto nel seguente modo:
     * dati sulla proprietà per la quale è stato concesso il mutuo
     * banca che ha rilasciato il mutuo
 2. Calcolare il rating di un mutuo
-3. Assegnazione di un mutuo ad un MBS
-4. Ottenere la composizione suddivisa per rischio di un MBS
+3. Assegnare un mutuo ad un MBS
+4. Ottenere la composizione percentuale suddivisa per rischio di un MBS
 
 <br>
 ### Analisi nel dettaglio
 
 Dalla banca d'investimenti ci vengono fornire le seguenti informazioni:
+<br>
+> *I mutui vengono acquistati in blocco una volta l'anno, in quell'occasione devono essere inseriti all'interno del gestionale con i relativi dati correlati;*
+> *Per politiche aziendali non vengono mai acquistati mutui più vecchi di 5 anni e l'età media del mutuo acquistato si aggira attorno ai 2-3 anni dalla stipula.*
+> *Circa l'85% dei mutui è intestato ad una persona singola ed il rimanente 15% a due persone.*
+> *I pagamenti in surplus vengono solitamente effettuati da clienti a rischio basso con una probabilità del 10%, per un numero medio di 1 versamento l'anno.*
+> *Le banche commerciali dalle quale vengono acquistati i mutui sono una ventina.*
 
-La banca acquista mutui in blocco una volta l'anno, in quell'occasione tutti i mutui vengono inseriti all'interno del database con i relativi dati correlati;
-dichiara inoltre di non acquistare mai per politiche aziendali mutui più vecchi di 5 anni e che l'età media del mutuo acquistato si aggira attorno ai 2-3 anni dalla stipula.
-Circa l'85% dei mutui è intestato ad una persona singola ed il rimanente 15% a due persone.
-I pagamenti in surplus del mutuo solitamente vengono effettuati da clienti a rischio basso con una probabilità del 10%, per un numero medio di 1 versamento l'anno.
-Le banche commerciali dalle quale vengono acquistati i mutui sono una ventina.
-
+<br>
 Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mutui andiamo a stimare le dimensioni del database:
 
 | Entità | Numero di entità inserite ogni anno | Note |
