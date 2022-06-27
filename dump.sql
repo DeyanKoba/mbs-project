@@ -92,22 +92,14 @@ CREATE TABLE mbs_tranche (
     FOREIGN KEY(mbs_id) REFERENCES mbs(id)
 );
 
-DROP TABLE IF EXISTS mortgage_payment;
-CREATE TABLE mortgage_payment (
+DROP TABLE IF EXISTS payment;
+CREATE TABLE payment (
     id int AUTO_INCREMENT PRIMARY KEY,
     mortgage_id int NOT NULL,
     amount decimal(10,2) unsigned NOT NULL,
-    month_reference tinyint unsigned NULL,
-    year_reference year unsigned NULL,
     due_date date NULL,
-    payment_date date NULL,
-    FOREIGN KEY(mortgage_id) REFERENCES mortgage(id),
-    CONSTRAINT month_reference_in_valid_range CHECK (month_reference >= 1 AND month_reference <= 12),
-    CONSTRAINT month_and_year_reference_and_due_date_null_or_not CHECK (
-        (month_reference IS NULL AND year_reference IS NULL AND due_date IS NULL)
-        OR
-        (month_reference IS NOT NULL AND year_reference IS NOT NULL AND due_date IS NOT NULL)
-    )
+    payment_date date NOT NULL,
+    FOREIGN KEY(mortgage_id) REFERENCES mortgage(id)
 );
 
 DELIMITER $$
@@ -135,34 +127,22 @@ BEGIN
     END IF;
 END $$
 
-CREATE TRIGGER check_mortgage_payment_dates BEFORE INSERT ON mortgage_payment
+CREATE TRIGGER check_payment_dates BEFORE INSERT ON mortgage_payment
 FOR EACH ROW
 BEGIN
     DECLARE mortgage_signing_date date;
+    SELECT date_of_signing INTO mortgage_signing_date FROM mortgage WHERE id = NEW.mortgage_id;
 
-    IF NEW.month_reference IS NOT NULL AND NEW.year_reference IS NOT NULL AND NEW.due_date IS NOT NULL THEN
-        SELECT date_of_signing INTO mortgage_signing_date FROM mortgage WHERE id = NEW.mortgage_id;
-        
-        IF (NEW.year_reference > YEAR(curdate())) OR (NEW.year_reference = YEAR(curdate()) AND NEW.month_reference > MONTH(curdate())) THEN
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The mortgage payment cannot refer to a future date';
-        END IF;
-
-        IF (NEW.year_reference < YEAR(mortgage_signing_date)) OR (NEW.year_reference = YEAR(mortgage_signing_date) AND NEW.month_reference < MONTH(mortgage_signing_date)) THEN
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The mortgage payment cannot refer to a date before the mortgage signing date';
-        END IF;
-
-        IF NEW.due_date < mortgage_signing_date THEN
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The mortgage payment due date cannot be before the mortgage signing date';
-        END IF;
-
+    IF NEW.due_date IS NOT NULL AND NEW.due_date < mortgage_signing_date THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'A payment due date cannot be before the mortgage signing date';
     END IF;
 
     IF NEW.payment_date < mortgage_signing_date THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The mortgage payment cannot be made before signing date';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'A payment cannot be made before the mortgage signing date';
     END IF;
 
     IF NEW.payment_date > curdate() THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The mortgage payment cannot be made in a date in the future';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'A mortgage payment cannot be made in a date in the future';
     END IF;
 
 END $$
