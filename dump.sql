@@ -39,7 +39,7 @@ CREATE TABLE property (
     street_name VARCHAR(255) NOT NULL,
     address_number VARCHAR(5) NULL,
     zip_code VARCHAR(5) NOT NULL,
-    value INT UNSIGNED NOT NULL,
+    value MEDIUMINT UNSIGNED NOT NULL,
     FOREIGN KEY(zip_code) REFERENCES location(zip_code)
 );
 
@@ -52,7 +52,7 @@ CREATE TABLE mbs (
 DROP TABLE IF EXISTS mortgage;
 CREATE TABLE mortgage (
     id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    amount INT UNSIGNED NOT NULL,
+    amount MEDIUMINT UNSIGNED NOT NULL,
     annual_interest_rate DECIMAL(4,2) NOT NULL,
     property_id INT UNSIGNED NOT NULL,
     bank_id SMALLINT UNSIGNED NOT NULL,
@@ -79,7 +79,7 @@ DROP TABLE IF EXISTS payment;
 CREATE TABLE payment (
     id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     mortgage_id MEDIUMINT UNSIGNED NOT NULL,
-    amount DECIMAL(9,2) NOT NULL,
+    amount DECIMAL(8,2) NOT NULL,
     due_date DATE NULL,
     payment_date DATE NOT NULL,
     FOREIGN KEY(mortgage_id) REFERENCES mortgage(id),
