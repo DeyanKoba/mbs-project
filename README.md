@@ -58,7 +58,7 @@ Per quanto riguarda i pagamenti si ha a disposizione il riferimento del mutuo pe
 
 Dalla banca d'investimenti ci vengono fornire le seguenti informazioni:
 <br>
-> *I mutui vengono acquistati in blocco una volta l'anno, in quell'occasione devono essere inseriti all'interno del gestionale con i relativi dati correlati;*
+> *I mutui vengono acquistati in blocco una volta l'anno, in quell'occasione devono essere inseriti all'interno del gestionale con i relativi dati correlati entro un mese dal momento dell'acquisto;*
 > *Per politiche aziendali non vengono mai acquistati mutui più vecchi di 5 anni e l'età media del mutuo acquistato si aggira attorno ai 2-3 anni dalla stipula.*
 > *Circa l'85% dei mutui è intestato ad una persona singola ed il rimanente 15% a due persone.*
 > *I pagamenti in surplus vengono solitamente effettuati da clienti a rischio basso con una probabilità del 10%, per un numero medio di 1 versamento l'anno.*
@@ -69,14 +69,16 @@ Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mut
 
 | Entità | Numero di entità inserite ogni anno | Note |
 | ------ | ----------------------------------- | ---- |
-| Mutuo | 2000 |  |
-| Proprietà | 2000 | Una proprietà per mutuo |
-| Pagamento | 60000 | In base alle dichiarazioni l'età media del mutuo al momento dell'acquisto si aggira attorno ai 2-3 anni;<br>in questo caso si è presa in considerazione una durata di 30 mesi, moltiplicata per i 2000 mutui<br>porta a 60000 pagamenti ordinari. Ai 60000 pagamenti ordinari andrebbero sommati 400 pagamenti <br>in surplus ottenuti nel seguente modo:<br><br>80% di 2000 mutui = 1600 mutui di classe A<br>10% di probabilità che un mutuo di classe A effettui un pagamento in surplus = 160 mutui effettuano pagamenti in surplus<br>1 versamento l'anno di media su una durata media di 30 mesi = 400 versamenti in surplus totali<br><br>Quest'ultimo risultato è stato trascurato dato il rapporto di incidenza minore dell'1% sul numero complessivo di pagamenti |
-| Persona | 2300 | 85% di 2000 = 1700 mutui intestati ad una persona<br>15% di 2000 = 300 mutui intestati a due persone |
-| Banca | 20 |  |
+| Mortgage | 2000 |  |
+| Property | 2000 | Una proprietà per mutuo |
+| Payment | 60000 | In base alle dichiarazioni l'età media del mutuo al momento dell'acquisto si aggira attorno ai 2-3 anni;<br>in questo caso si è presa in considerazione una durata di 30 mesi, moltiplicata per i 2000 mutui<br>porta a 60000 pagamenti ordinari. Ai 60000 pagamenti ordinari andrebbero sommati 400 pagamenti <br>in surplus ottenuti nel seguente modo:<br><br>80% di 2000 mutui = 1600 mutui di classe A<br>10% di probabilità che un mutuo di classe A effettui un pagamento in surplus = 160 mutui effettuano pagamenti in surplus<br>1 versamento l'anno di media su una durata media di 30 mesi = 400 versamenti in surplus totali<br><br>Quest'ultimo risultato è stato trascurato dato il rapporto di incidenza minore dell'1% sul numero complessivo di pagamenti |
+| Person | 2300 | 85% di 2000 = 1700 mutui intestati ad una persona<br>15% di 2000 = 300 mutui intestati a due persone |
+| Bank | 20 |  |
 | MBS | 1 |  |
+| Location | 40000 | Location accoglie al suo interno i vari ZIP Codes con la relativa città e stato, negli USA questi sono circa 40000 |
+| Accountholder | 2300 |  |
 <br>
-### Vincoli non esprimibili
+### Vincoli non esprimibili graficamente
 
 Da un'analisi del problema posto sorgono dei vincoli che non sono esprimibili:
 
@@ -84,7 +86,7 @@ Da un'analisi del problema posto sorgono dei vincoli che non sono esprimibili:
 * Una persona deve essere maggiorenne per poter stipulare o essere cointestatario di un mutuo;
 * L'importo concesso per un mutuo non può superare il valore del relativo immobile;
 * La durata ammissibile in anni di un mutuo può essere di 10, 15, 20 oppure 30 anni;
-* La data di stipula di un mutuo non può essere datata nel futuro ed allo stesso modo non può essere datata più di 5 anni nel passato + 1 mese di tempo calcolato come margine per permettere l'inserimento dei dati all'interno del gestionale dal momento dell'acquisto;
+* La data di stipula di un mutuo non può essere datata nel futuro ed allo stesso modo non può essere più vecchia di 5 anni + 1 mese di tempo calcolato come margine per permettere l'inserimento dei dati all'interno del gestionale dal momento dell'acquisto;
 * Un versamento non può essere datato nel futuro ed allo stesso modo non può essere datato prima della stipula di un mutuo;
 * Il periodo di riferimento di un pagamento non può essere antecedente la stipula del mutuo;
 * Il versamento per un mutuo non può eccedere la parte rimanente da saldare;
@@ -93,8 +95,22 @@ Per quanto riguarda la tabella che accoglie i versamenti di un mutuo, vi sono de
 inanzitutto nella tabella in questione vanno salvati sia i versamenti a saldo di una rata che i versamenti in surplus, per i pagamenti in surplus ovviamente non ha senso che vi sia indicata una data di scadenza oppure un periodo di riferimento.
 
 Non vengono posti vincoli sull'importo minimo del versamento in quanto alcune banche a fronte di un versamento in surplus potrebbero ricalcolare la rata mensile ed altre potrebbero semplicemente ricalcolare la data di estinzione del mutuo mantenendo l'importo delle rate invariato.
+<br>
+### Considerazioni sul dimensionamento dei singoli attributi
 
-<br>
-<br>
-<br>
-<br>
+Con una stima di 2300 persone inserite nel DB ogni anno e circa 2000 mutui, dove ogni mutuo corrisponde ad una proprietà, è stato scelto di utilizzare MEDIUMINT UNSIGNED per l'identificatore di Person, Mortgage e Property; MEDIUMINT UNSIGNED accoglie valori che vanno da 0 a 16.777.215, il che vorrebbe dire che per esaurire tutti gli identificatori ci vorrebbero quasi 7000 anni (anche nel caso di un carico di dati 10 volte superiore alla stima originale si impiegherebbero quasi 700 anni per esaurire gli identificatori per le persone ed i mutui).
+E' stato preso in considerazione di utilizare anche SMALLINT UNSIGNED che permette valori fino a 65535, è stato scartato in quanto con la stima dei dati attuali si impiegherebbero circa 30 anni per esaurire gli identificatori, che con un carico di dati 10 volte superiore alla stima originale diventerebbero circa 3.
+
+Anche per l'identificatore di Payment è stato scelto di adottare MEDIUMINT UNSIGNED, con una media di 60.000 pagamenti all'anno esso sarebbe sufficiente per quasi 300 anni e con un carico 10 volte superiore andremmo a quasi 30 anni.
+
+Un ragionamento analogo è stato effettuato per gli identificatori di Bank per il quale è stato scelto SMALLINT UNSIGNED che può accogliere valori da 0 a 65535; considerando una stima di 20 banche abituali dalle quali vengono acquistati i mutui, con un carico di 10 volte tanto si va a 200, il valore più vicino sarebbe potuto essere un TINYINT UNSIGNED che però permette valori compresi tra 0 e 255. Un margine di 55 identificatori sembrava non sufficiente e si è preferito utilizzare SMALLINT UNSIGNED in questo caso.
+
+Per gli MBS è stato scelto di utilizzare TINYINT UNSIGNED; siccome si stima di emettere un MBS all'anno questo valore è sufficiente per 255 anni, con un carico di dati 10 volte superiore (10 MBS emessi ogni anno) questo valore basterebbe per 25 anni che si ritiene comunque un tempo di vita sufficientemente lungo prima di dover effettuare delle eventuali modifiche.
+
+Per l'attributo amount di Mortgage è stato utilizzato MEDIUMINT UNSIGNED che può accogliere valori compresi tra 0 e 16.777.215, si è ritenuta adeguato tale importo massimo in quanto le banche dalle quali si acquistanoi mutui difficilemente emetteranno mutui oltre quel valore, mentre SMALLINT UNSIGNED avrebbe imposto un limite superiore pari a 65.535
+
+Per l'attributo value di Property è stato scelto di adottare MEDIUMINT UNSIGNED in quanto va ad imporre un limite superiore al valore dell'immobile pari a 16.777.215, limite che si è ritenuto adeguato (anche in questo caso si è escluso SMALLINT UNSIGNED in quanto avrebbe imposto un valore massimo dell'immobile pari a 65.535).
+Di conseguenza per l'attributo amount di Payment è stato scelto di utilizzare DECIMAL(7,2) in quanto implicherebbe un importo massimo pari a 99.999,99. Considerando che questo ordine di grandezza non è tipico di una rata mensile di un mutuo ma semmai di un pagamento in surplus per la riduzione della rata mensile del mutuo e che le banche dalle quali si acquistano mutui offrono mutui al cittadino medio, si è ritenuto adeguato.
+
+Per quanto riguarda annual\_interest\_rate è stato scelto di adottare DECIMAL(4,2) che permette valori decimali per un totale di 4 cifre di cui 2 decimali (in tal modo si riescono ad avere tassi di interesse fino al 99.99%). Non si è ritenuto sufficiente utilizzare DECIMAL(3,2) in quanto il suo limite superiore sarebbe stato 9.99% che è stato ritenuto non sufficientemente alto consultando i dati storici antecedenti il 1991.
+Fonte: FreddieMac (Federal Home Loan Mortgage Corporation), [30-Year Fixed-Rate Mortgages Since 1971](https://www.freddiemac.com/pmms/pmms30)
