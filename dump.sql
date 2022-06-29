@@ -6,83 +6,84 @@ USE mbs_project_2022;
 
 DROP TABLE IF EXISTS person;
 CREATE TABLE person (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    name varchar(255) NOT NULL,
+    id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
     surname VARCHAR(255) NOT NULL,
     birthdate DATE NOT NULL,
     employment VARCHAR(255),
-    annual_salary INT unsigned NOT NULL,
+    annual_salary MEDIUMINT unsigned NOT NULL,
     CONSTRAINT is_over_18 CHECK TIMESTAMPDIFF(YEAR, birthdate, curdate()) >= 18,
     CONSTRAINT is_less_than_100 CHECK TIMESTAMPDIFF(YEAR, birthdate, curdate()) < 100
 );
 
 DROP TABLE IF EXISTS location;
 CREATE TABLE location (
-    zip_code varchar(5) PRIMARY KEY,
-    city varchar(255) NOT NULL,
-    state varchar(255) NOT NULL
+    zip_code VARCHAR(5) PRIMARY KEY,
+    city VARCHAR(255) NOT NULL,
+    state VARCHAR(255) NOT NULL
 );
 
 DROP TABLE IF EXISTS bank;
 CREATE TABLE bank (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    name varchar(255) NOT NULL,
-    address varchar(255) NOT NULL,
-    address_number varchar(5) NULL,
-    zip_code varchar(5) NOT NULL,
-    vat_code varchar(255) NOT NULL,
+    id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    street_name VARCHAR(255) NOT NULL,
+    address_number VARCHAR(5) NULL,
+    zip_code VARCHAR(5) NOT NULL,
     FOREIGN KEY(zip_code) REFERENCES location(zip_code)
 );
 
 DROP TABLE IF EXISTS property;
 CREATE TABLE property (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    address varchar(255) NOT NULL,
-    address_number varchar(5) NULL,
-    zip_code varchar(5) NOT NULL,
-    value int unsigned NOT NULL,
+    id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    street_name VARCHAR(255) NOT NULL,
+    address_number VARCHAR(5) NULL,
+    zip_code VARCHAR(5) NOT NULL,
+    value INT UNSIGNED NOT NULL,
     FOREIGN KEY(zip_code) REFERENCES location(zip_code)
 );
 
 DROP TABLE IF EXISTS mbs;
 CREATE TABLE mbs (
-    id int AUTO_INCREMENT PRIMARY KEY,
+    id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
 
 DROP TABLE IF EXISTS mortgage;
 CREATE TABLE mortgage (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    amount int unsigned NOT NULL,
-    annual_interest_rate decimal(4,2) unsigned NOT NULL,
-    property_id int NOT NULL,
-    bank_id int NOT NULL,
+    id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    amount INT UNSIGNED NOT NULL,
+    annual_interest_rate DECIMAL(4,2) NOT NULL,
+    property_id INT UNSIGNED NOT NULL,
+    bank_id SMALLINT UNSIGNED NOT NULL,
     date_of_signing DATE NOT NULL,
-    maturity_years tinyint unsigned NOT NULL,
-    mbs_id int NULL,
+    maturity_years TINYINT unsigned NOT NULL,
+    mbs_id SMALLINT UNSIGNED NULL,
     FOREIGN KEY (property_id) REFERENCES property(id),
     FOREIGN KEY (bank_id) REFERENCES bank(id),
     FOREIGN KEY (mbs_id) REFERENCES mbs(id),
     CONSTRAINT is_more_than_10000_dollars CHECK (amount >= 10000),
-    CONSTRAINT maturity_years_in_valid_range CHECK (maturity_years IN (10, 15, 20, 30))
+    CONSTRAINT maturity_years_in_valid_range CHECK (maturity_years IN (10, 15, 20, 30)),
+    CONSTRAINT annual_interest_rate_is_more_than_0 CHECK (annual_interest_rate > 0)
 );
 
 DROP TABLE IF EXISTS accountholder;
 CREATE TABLE accountholder (
-    mortgage_id int NOT NULL,
-    person_id int NOT NULL,
+    mortgage_id MEDIUMINT NOT NULL,
+    person_id MEDIUMINT NOT NULL,
     FOREIGN KEY (mortgage_id) REFERENCES mortgage(id),
     FOREIGN KEY (person_id) REFERENCES person(id)
 );
 
 DROP TABLE IF EXISTS payment;
 CREATE TABLE payment (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    mortgage_id int NOT NULL,
-    amount decimal(10,2) unsigned NOT NULL,
-    due_date date NULL,
-    payment_date date NOT NULL,
-    FOREIGN KEY(mortgage_id) REFERENCES mortgage(id)
+    id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    mortgage_id MEDIUMINT UNSIGNED NOT NULL,
+    amount DECIMAL(9,2) NOT NULL,
+    due_date DATE NULL,
+    payment_date DATE NOT NULL,
+    FOREIGN KEY(mortgage_id) REFERENCES mortgage(id),
+    CONSTRAINT amount_is_more_than_0 CHECK (amount > 0)
 );
 
 DELIMITER $$
@@ -277,7 +278,7 @@ END $$
 CREATE FUNCTION get_dates_difference_in_years(
     past_date date,
     future_date date
-) RETURNS int DETERMINISTIC
+) RETURNS INT DETERMINISTIC
 BEGIN
     RETURN TIMESTAMPDIFF(YEAR, past_date, future_date);
 END $$
