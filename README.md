@@ -39,7 +39,7 @@ Ogni MBS in una situazione "normale" è composto nel seguente modo:
 <br>
 Di un mutuo si hanno i dati relativi al suo importo, il tasso d'interesse fisso annuo, la data in cui è stato stipulato, la durata in anni oltre ai dati della relativa proprietà per la quale è stato concesso il mutuo, gli intestatari e la banca che lo ha rilasciato.
 Di un intestatario si hanno a disposizione nome, cognome, data di nascita, salario annuo ed eventualmente impiego.
-Di una proprietà si ha il valore e l'indirizzo, mentre di una banca si ha nome, partita iva ed indirizzo.
+Di una proprietà si ha il valore e l'indirizzo, mentre di una banca si ha nome ed indirizzo.
 Per quanto riguarda i pagamenti si ha a disposizione il riferimento del mutuo per il quale è stato effettuato il versamento, l'importo del versamento, mese ed anno per il quale fa riferimento la rata, la data di scadenza e quella di versamento.
 
 ### Azioni eseguibili sul database
