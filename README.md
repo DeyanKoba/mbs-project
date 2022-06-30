@@ -2,7 +2,7 @@
 
 Università degli studi di Trieste - Corso di Laurea in Ingegneria Elettronica ed Informatica - Deyan Koba
 <br>
-### Introduzione
+## Introduzione
 
 Una banca d'investimento richiede la realizzazione di un database per gestire i propri Mortgage Backed Securities (MBS).
 Un MBS, in breve, è un insieme di mutui raccolti in un "pacchetto", quest'ultimo viene successivamente suddiviso in quote (tranches) con diverso ROI (Return On Investment) in base al rischio e vendute al pubblico come forma d'investimento. In tal modo le banche rientrano "immediatamente" del capitale concesso in prestito ed in pratica è l'investitore finale che acquista le tranches a fornire il capitale per finanziare i mutui, ricevendo periodicamente i dividendi generati dagli interessi dei mutui.
