@@ -55,9 +55,8 @@ Per quanto riguarda i pagamenti si ha a disposizione l'importo del versamento, l
 
 ## Schema Entity-Relationship
 
-![image](entity-relationship-scheme.svg)
+![entity relationship scheme](entity-relationship-scheme.svg)
 
-<br>
 ## Analisi della dimensione
 
 Dalla banca d'investimenti ci vengono fornire le seguenti informazioni:
