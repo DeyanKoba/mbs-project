@@ -56,6 +56,7 @@ Per quanto riguarda i pagamenti si ha a disposizione l'importo del versamento, l
 <br>
 ### Schema Entity-Relationship
 
+
 ![image](entity-relationship-scheme.svg)
 
 <br>
