@@ -68,7 +68,7 @@ Dalla banca d'investimenti ci vengono fornire le seguenti informazioni:
 > *Le banche commerciali dalle quale vengono acquistati i mutui sono una ventina.*<br>
 
 <br>
-Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mutui andiamo a stimare le dimensioni del database:
+Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mutui andiamo a stimare le dimensioni del database:<br><br>
 
 | Entità | Numero di entità inserite ogni anno | Note |
 | ------ | ----------------------------------- | ---- |
@@ -80,7 +80,7 @@ Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mut
 | MBS | 1 |  |
 | Location | 40000 | Location accoglie al suo interno i vari ZIP Codes con la relativa città e stato, negli USA questi sono circa 40000 |
 | Accountholder | 2300 |  |
-<br>
+
 ## Vincoli non esprimibili graficamente
 
 Da un'analisi del problema posto sorgono dei vincoli che non sono esprimibili:
