@@ -57,7 +57,9 @@ Per quanto riguarda i pagamenti si ha a disposizione il riferimento del mutuo pe
 ### Schema Entity-Relationship
 <br>
 <br>
-![image](./entity-relationship-scheme.svg)
+
+![image](entity-relationship-scheme.svg)
+
 <br>
 <br>
 ### Analisi della dimensione
