@@ -11,7 +11,7 @@ Un MBS, in breve, è un insieme di mutui raccolti in un "pacchetto", quest'ultim
 > [Tranches Definition](https://www.investopedia.com/terms/t/tranches.asp)
 
 <br>
-La banca d'investimento acquista in blocco, una volta l'anno, dai 1000 ai 3000 mutui rilasciati da altre banche commerciali, ad ogni mutuo viene assegnata una valutazione di rischio che potrà essere 'A', 'B' oppure 'C';
+La banca d'investimento acquista in blocco, una volta l'anno, dai 1000 ai 3000 mutui rilasciati da altre banche commerciali, ad ogni mutuo viene assegnata una valutazione del rischio che potrà essere 'A', 'B' oppure 'C';
 
 * **A** indica un mutuo per il quale si suppone un basso rischio di insolvenza;
 * **B** indica un rischio medio;
@@ -25,7 +25,7 @@ Il fattore di rischio è calcolato su 4 parametri con diverse incidenze:
 4. Rapporto tra rate potenzialmente non incassabili dovute all'età del soggetto ed il capitale concesso, incidenza del 10%
 
 Per il punto 4 si assume che la vita media si attesti ad 80 anni, per cui il capitale a rischio per età degli intestatari è la somma delle rate mensili dovute oltre il compimento dell'ottantesimo anno di età.
-Nel caso in cui un mutuo sia intestato a più di un soggetto e di questi solo alcuni siano a rischio di insolvenza per età, si terrà conto del rapporto tra reddito dei soggetti a rischio sul reddito toale dei cointestatari.
+Nel caso in cui un mutuo sia intestato a più di un soggetto e di questi solo alcuni siano a rischio di insolvenza per età, si terrà conto del rapporto tra reddito dei soggetti a rischio sul reddito totale dei cointestatari.
 
 Il fattore di rischio è quindi calcolato nel seguente modo:
 
