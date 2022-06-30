@@ -42,7 +42,7 @@ Di un intestatario si hanno a disposizione nome, cognome, data di nascita, salar
 Di una proprietà si ha il valore e l'indirizzo, mentre di una banca si ha nome ed indirizzo.
 Per quanto riguarda i pagamenti si ha a disposizione l'importo del versamento, la data del versamento ed eventualmente una data di scadenza nel caso in cui il versamento faccia riferimento ad una rata.
 
-### Azioni eseguibili sul database
+## Azioni eseguibili sul database
 
 1. Inserire un mutuo acquistato ed i dati correlati ad esso, ovvero:
     * storico dei pagamenti
@@ -53,15 +53,12 @@ Per quanto riguarda i pagamenti si ha a disposizione l'importo del versamento, l
 3. Assegnare un mutuo ad un MBS
 4. Ottenere la composizione percentuale suddivisa per rischio di un MBS
 
-<br>
-### Schema Entity-Relationship
-
+## Schema Entity-Relationship
 
 ![image](entity-relationship-scheme.svg)
 
 <br>
-<br>
-### Analisi della dimensione
+## Analisi della dimensione
 
 Dalla banca d'investimenti ci vengono fornire le seguenti informazioni:
 <br>
@@ -85,7 +82,7 @@ Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mut
 | Location | 40000 | Location accoglie al suo interno i vari ZIP Codes con la relativa città e stato, negli USA questi sono circa 40000 |
 | Accountholder | 2300 |  |
 <br>
-### Vincoli non esprimibili graficamente
+## Vincoli non esprimibili graficamente
 
 Da un'analisi del problema posto sorgono dei vincoli che non sono esprimibili:
 
@@ -103,7 +100,7 @@ inanzitutto nella tabella in questione vanno salvati sia i versamenti a saldo di
 
 Non vengono posti vincoli sull'importo minimo del versamento in quanto alcune banche a fronte di un versamento in surplus potrebbero ricalcolare la rata mensile ed altre potrebbero semplicemente ricalcolare la data di estinzione del mutuo mantenendo l'importo delle rate invariato.
 <br>
-### Considerazioni sul dimensionamento dei singoli attributi
+## Considerazioni sul dimensionamento dei singoli attributi
 
 Per il dimensionamento degli attributi, in particolar modo per gli identificatori, si è cercato di ottenere un margine che permettesse l'inserimento di dati per almeno 20 anni con un carico di dati 10 volte superiore alla stima originale.
 
