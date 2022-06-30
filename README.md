@@ -66,11 +66,11 @@ Per quanto riguarda i pagamenti si ha a disposizione l'importo del versamento, l
 
 Dalla banca d'investimenti ci vengono fornire le seguenti informazioni:
 <br>
-> *I mutui vengono acquistati in blocco una volta l'anno, in quell'occasione devono essere inseriti all'interno del gestionale con i relativi dati correlati entro un mese dal momento dell'acquisto;*
-> *Per politiche aziendali non vengono mai acquistati mutui più vecchi di 5 anni e l'età media del mutuo acquistato si aggira attorno ai 2-3 anni dalla stipula.*
-> *Circa l'85% dei mutui è intestato ad una persona singola ed il rimanente 15% a due persone.*
-> *I pagamenti in surplus vengono solitamente effettuati da clienti a rischio basso con una probabilità del 10%, per un numero medio di 1 versamento l'anno.*
-> *Le banche commerciali dalle quale vengono acquistati i mutui sono una ventina.*
+> *I mutui vengono acquistati in blocco una volta l'anno, in quell'occasione devono essere inseriti all'interno del gestionale con i relativi dati correlati entro un mese dal momento dell'acquisto;*<br>
+> *Per politiche aziendali non vengono mai acquistati mutui più vecchi di 5 anni e l'età media del mutuo acquistato si aggira attorno ai 2-3 anni dalla stipula.*<br>
+> *Circa l'85% dei mutui è intestato ad una persona singola ed il rimanente 15% a due persone.*<br>
+> *I pagamenti in surplus vengono solitamente effettuati da clienti a rischio basso con una probabilità del 10%, per un numero medio di 1 versamento l'anno.*<br>
+> *Le banche commerciali dalle quale vengono acquistati i mutui sono una ventina.*<br>
 
 <br>
 Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mutui andiamo a stimare le dimensioni del database:
