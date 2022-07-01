@@ -135,3 +135,6 @@ Per quanto riguarda annual\_interest\_rate è stato scelto di adottare `DECIMAL(
 
 ## Passaggio al modello relazionale
 Per permettere l'inserimento di un solo mutuo per immobile si va ad impostare un constraint di tipo `UNIQUE` sull'attribute property_id che è chiave esterna con riferimento a Property.id <br>
+
+## Schema logico
+![ERD](documentation/ERD.svg)
