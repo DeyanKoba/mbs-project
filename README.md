@@ -74,7 +74,8 @@ Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mut
 | ------ | ----------------------------------- | ---- |
 | Mortgage | 2000 |  |
 | Property | 2000 | Una proprietà per mutuo |
-| Payment | 60000 | In base alle dichiarazioni l'età media del mutuo al momento dell'acquisto si aggira attorno ai 2-3 anni;<br>in questo caso si è presa in considerazione una durata di 30 mesi, moltiplicata per i 2000 mutui<br>porta a 60000 pagamenti ordinari. Ai 60000 pagamenti ordinari andrebbero sommati 400 pagamenti <br>in surplus ottenuti nel seguente modo:<br><br>80% di 2000 mutui = 1600 mutui di classe A<br>10% di probabilità che un mutuo di classe A effettui un pagamento in surplus = 160 mutui effettuano pagamenti in surplus<br>1 versamento l'anno di media su una durata media di 30 mesi = 400 versamenti in surplus totali<br><br>Quest'ultimo risultato è stato trascurato dato il rapporto di incidenza minore dell'1% sul numero complessivo di pagamenti |
+| Mortgage Payment | 60000 | In base alle dichiarazioni l'età media del mutuo al momento dell'acquisto si aggira attorno ai 2-3 anni;<br>in questo caso si è presa in considerazione una durata di 30 mesi, moltiplicata per i 2000 mutui<br>porta a 60000 pagamenti ordinari |
+| Surplus Payment | 400 | 80% di 2000 mutui = 1600 mutui di classe A<br>10% di probabilità che un mutuo di classe A effettui un pagamento in surplus = 160 mutui effettuano pagamenti in surplus<br>1 versamento l'anno di media su una durata media di 30 mesi = 400 versamenti in surplus |
 | Person | 2300 | 85% di 2000 = 1700 mutui intestati ad una persona<br>15% di 2000 = 300 mutui intestati a due persone |
 | Bank | 20 |  |
 | MBS | 1 |  |
@@ -128,3 +129,6 @@ Di conseguenza per l'attributo *amount* di *Payment* è stato scelto di utilizza
 Per quanto riguarda annual\_interest\_rate è stato scelto di adottare `DECIMAL(4,2)` che permette valori decimali per un totale di 4 cifre di cui 2 decimali (in tal modo si riescono ad avere tassi di interesse fino al 99.99%). Non si è ritenuto sufficiente utilizzare `DECIMAL(3,2)` in quanto il suo limite superiore sarebbe stato 9.99% che è stato ritenuto non sufficientemente alto consultando i dati storici antecedenti il 1991.
 
 > Fonte: FreddieMac (Federal Home Loan Mortgage Corporation), [30-Year Fixed-Rate Mortgages Since 1971](https://www.freddiemac.com/pmms/pmms30)
+
+## Diagramma ER Ristrutturato
+![ER Ristrutturato](documentation/ER-restructured.svg)
