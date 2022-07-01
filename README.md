@@ -4,7 +4,7 @@ Università degli studi di Trieste - Corso di Laurea in Ingegneria Elettronica e
 <br>
 ## Introduzione
 
-Una banca d'investimento richiede la realizzazione di un database per gestire i propri Mortgage Backed Securities (MBS).
+Una banca d'investimento con sede negli USA richiede la realizzazione di un database per gestire i propri Mortgage Backed Securities (MBS).
 Un MBS, in breve, è un insieme di mutui raccolti in un "pacchetto", quest'ultimo viene successivamente suddiviso in quote (tranches) con diverso ROI (Return On Investment) in base al rischio e vendute al pubblico come forma d'investimento. In tal modo le banche rientrano "immediatamente" del capitale concesso in prestito ed in pratica è l'investitore finale che acquista le tranches a fornire il capitale per finanziare i mutui, ricevendo periodicamente i dividendi generati dagli interessi dei mutui.
 <br>
 > [Mortgage Backed Security Definition](https://www.investopedia.com/terms/m/mbs.asp)<br>
@@ -92,7 +92,7 @@ L'entità *Payment* può essere vista come parent di *Mortgage Payment* e *Surpl
 
 ## Vincoli non esprimibili graficamente
 
-Da un'analisi del problema posto sorgono dei vincoli che non sono esprimibili:
+Da un'analisi del problema posto sorgono dei vincoli che non sono esprimibili graficamente:
 
 * L'importo minimo concesso come mutuo è di $ 10.000,00;
 * Una persona deve essere maggiorenne per poter stipulare o essere cointestatario di un mutuo;
@@ -100,17 +100,16 @@ Da un'analisi del problema posto sorgono dei vincoli che non sono esprimibili:
 * La durata ammissibile in anni di un mutuo può essere di 10, 15, 20 oppure 30 anni;
 * La data di stipula di un mutuo non può essere datata nel futuro ed allo stesso modo non può essere più vecchia di 5 anni + 1 mese di tempo calcolato come margine per permettere l'inserimento dei dati all'interno del gestionale dal momento dell'acquisto;
 * Un versamento non può essere datato nel futuro ed allo stesso modo non può essere datato prima della stipula di un mutuo;
-* Il periodo di riferimento di un pagamento non può essere antecedente la stipula del mutuo;
+* La data di scadenza di un pagamento così come la data stessa del pagamento non possono essere antecedenti la data di stipula del mutuo;
 * Il versamento per un mutuo non può eccedere la parte rimanente da saldare;
 * Il tasso di interesse non può essere negativo;
 
-Per quanto riguarda la tabella che accoglie i versamenti di un mutuo, vi sono dei vincoli particolari da considerare:
-inanzitutto nella tabella in questione vanno salvati sia i versamenti a saldo di una rata che i versamenti in surplus, per i pagamenti in surplus ovviamente non ha senso che vi sia indicata una data di scadenza oppure un periodo di riferimento.
+Per realizzare il vincolo sulla maggiore età di un intestatario è necessario ricorrere ad un trigger in quanto i CHECK non possono utilizzare al loro interno funzioni non deterministiche (in questo caso curdate()), così come per i check sulla data di stipulazione del mutuo e sulle date dei pagamenti.
+Allo stesso modo per realizzare il check sul valore dell'immobile e per il check sull'importo del versamento è necessario ricorrere alle relazioni con i dati correlati per le quali è necessario ricorrere ad un trigger.
 
-Per il vincolo sul tasso di interesse è necessario utilizzare un CHECK in quanto in MySQL il constraint UNSIGNED per gli attributi di tipo decimal è deprecato
+Per il vincolo sul tasso di interesse è necessario utilizzare un CHECK in quanto in MySQL il constraint UNSIGNED per gli attributi di tipo decimal è deprecato.
 > [WL#12391: Deprecate unsigned attribute for DECIMAL and FLOAT data types](https://dev.mysql.com/worklog/task/?id=12391)
 
-Non vengono posti vincoli sull'importo minimo del versamento in quanto alcune banche a fronte di un versamento in surplus potrebbero ricalcolare la rata mensile ed altre potrebbero semplicemente ricalcolare la data di estinzione del mutuo mantenendo l'importo delle rate invariato.
 <br>
 ## Considerazioni sul dimensionamento dei singoli attributi
 
