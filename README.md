@@ -55,7 +55,7 @@ Per quanto riguarda i pagamenti si ha a disposizione l'importo del versamento, l
 
 ## Schema Entity-Relationship
 
-![entity relationship scheme](entity-relationship-scheme.svg)
+![ER](documentation/ER.svg)
 
 ## Analisi della dimensione
 
