@@ -102,9 +102,13 @@ Da un'analisi del problema posto sorgono dei vincoli che non sono esprimibili:
 * Un versamento non può essere datato nel futuro ed allo stesso modo non può essere datato prima della stipula di un mutuo;
 * Il periodo di riferimento di un pagamento non può essere antecedente la stipula del mutuo;
 * Il versamento per un mutuo non può eccedere la parte rimanente da saldare;
+* Il tasso di interesse non può essere negativo;
 
 Per quanto riguarda la tabella che accoglie i versamenti di un mutuo, vi sono dei vincoli particolari da considerare:
 inanzitutto nella tabella in questione vanno salvati sia i versamenti a saldo di una rata che i versamenti in surplus, per i pagamenti in surplus ovviamente non ha senso che vi sia indicata una data di scadenza oppure un periodo di riferimento.
+
+Per il vincolo sul tasso di interesse è necessario utilizzare un CHECK in quanto in MySQL il constraint UNSIGNED per gli attributi di tipo decimal è deprecato
+> [WL#12391: Deprecate unsigned attribute for DECIMAL and FLOAT data types](https://dev.mysql.com/worklog/task/?id=12391)
 
 Non vengono posti vincoli sull'importo minimo del versamento in quanto alcune banche a fronte di un versamento in surplus potrebbero ricalcolare la rata mensile ed altre potrebbero semplicemente ricalcolare la data di estinzione del mutuo mantenendo l'importo delle rate invariato.
 <br>
