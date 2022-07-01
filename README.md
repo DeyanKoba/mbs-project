@@ -81,6 +81,14 @@ Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mut
 | Location | 40000 | Location accoglie al suo interno i vari ZIP Codes con la relativa città e stato, negli USA questi sono circa 40000 |
 | Accountholder | 2300 |  |
 
+## Ristrutturazione Schema ER
+
+### Eliminazione degli attributi multivalore e composti
+Si procede con la scomposizione dell'attributo *address* presente in *Bank* e *Property* in 3 attributi distinti: *Street Name*, *Address Number* e *ZIP Code*.<br>
+
+### Eliminazione delle generalizzazioni
+L'entità *Payment* può essere vista come parent di *Mortgage Payment* e *Surplus Payment* per le quali però l'unica differenza risiede nell'attributo *due_date* presente solamente in *Mortgage Payment*. Ritengo adeguato a questo punto unire le due entità in un'unica entità *Payment* con gli attributi di *Mortgage Payment* impostando però l'attributo *due_date* come nullable ovvero che permette valori `NULL` in tal modo otteniamo la distinzione tra le due tipologie di pagamento
+
 ## Vincoli non esprimibili graficamente
 
 Da un'analisi del problema posto sorgono dei vincoli che non sono esprimibili:
@@ -120,11 +128,3 @@ Di conseguenza per l'attributo *amount* di *Payment* è stato scelto di utilizza
 Per quanto riguarda annual\_interest\_rate è stato scelto di adottare `DECIMAL(4,2)` che permette valori decimali per un totale di 4 cifre di cui 2 decimali (in tal modo si riescono ad avere tassi di interesse fino al 99.99%). Non si è ritenuto sufficiente utilizzare `DECIMAL(3,2)` in quanto il suo limite superiore sarebbe stato 9.99% che è stato ritenuto non sufficientemente alto consultando i dati storici antecedenti il 1991.
 
 > Fonte: FreddieMac (Federal Home Loan Mortgage Corporation), [30-Year Fixed-Rate Mortgages Since 1971](https://www.freddiemac.com/pmms/pmms30)
-
-## Ristrutturazione Schema ER
-
-### Eliminazione degli attributi multivalore e composti
-Si procede con la scomposizione dell'attributo *address* presente in *Bank* e *Property* in 3 attributi distinti: *Street Name*, *Address Number* e *ZIP Code*.<br>
-
-### Eliminazione delle generalizzazioni
-L'entità *Payment* che può essere vista come parent di *Mortgage Payment* e *Surplus Payment* per le quali però l'unica differenza risiede nell'attributo *due_date* presente solamente in *Mortgage Payment*. Ritengo adeguato a questo punto unire le due entità in un'unica entità *Payment* con gli attributi di *Mortgage Payment* impostando però l'attributo *due_date* come nullable ovvero che permette valori `NULL` in tal modo otteniamo la distinzione tra le due tipologie di pagamento
