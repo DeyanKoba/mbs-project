@@ -138,3 +138,88 @@ Per permettere l'inserimento di un solo mutuo per immobile si va ad impostare un
 
 ## Schema logico
 ![ERD](documentation/ERD.svg)
+
+## Creazione fisica
+
+### Query per la creazione
+```
+DROP DATABASE IF EXISTS mbs_project_2022;
+
+CREATE DATABASE mbs_project_2022;
+
+USE mbs_project_2022;
+
+CREATE TABLE person (
+    id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    surname VARCHAR(255) NOT NULL,
+    birthdate DATE NOT NULL,
+    employment VARCHAR(255),
+    annual_salary MEDIUMINT unsigned NOT NULL,
+    CONSTRAINT is_over_18 CHECK TIMESTAMPDIFF(YEAR, birthdate, curdate()) >= 18,
+    CONSTRAINT is_less_than_100 CHECK TIMESTAMPDIFF(YEAR, birthdate, curdate()) < 100
+);
+
+CREATE TABLE location (
+    zip_code VARCHAR(5) PRIMARY KEY,
+    city VARCHAR(255) NOT NULL,
+    state VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE bank (
+    id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    street_name VARCHAR(255) NOT NULL,
+    address_number VARCHAR(5) NULL,
+    zip_code VARCHAR(5) NOT NULL,
+    FOREIGN KEY(zip_code) REFERENCES location(zip_code)
+);
+
+CREATE TABLE property (
+    id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    street_name VARCHAR(255) NOT NULL,
+    address_number VARCHAR(5) NULL,
+    zip_code VARCHAR(5) NOT NULL,
+    value MEDIUMINT UNSIGNED NOT NULL,
+    FOREIGN KEY(zip_code) REFERENCES location(zip_code)
+);
+
+CREATE TABLE mbs (
+    id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE mortgage (
+    id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    amount MEDIUMINT UNSIGNED NOT NULL,
+    annual_interest_rate DECIMAL(4,2) NOT NULL,
+    property_id INT UNSIGNED NOT NULL,
+    bank_id SMALLINT UNSIGNED NOT NULL,
+    date_of_signing DATE NOT NULL,
+    maturity_years TINYINT unsigned NOT NULL,
+    mbs_id SMALLINT UNSIGNED NULL,
+    FOREIGN KEY (property_id) REFERENCES property(id),
+    FOREIGN KEY (bank_id) REFERENCES bank(id),
+    FOREIGN KEY (mbs_id) REFERENCES mbs(id),
+    CONSTRAINT is_more_than_10000_dollars CHECK (amount >= 10000),
+    CONSTRAINT maturity_years_in_valid_range CHECK (maturity_years IN (10, 15, 20, 30)),
+    CONSTRAINT annual_interest_rate_is_more_than_0 CHECK (annual_interest_rate > 0)
+);
+
+CREATE TABLE accountholder (
+    mortgage_id MEDIUMINT NOT NULL,
+    person_id MEDIUMINT NOT NULL,
+    FOREIGN KEY (mortgage_id) REFERENCES mortgage(id),
+    FOREIGN KEY (person_id) REFERENCES person(id)
+);
+
+CREATE TABLE payment (
+    id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    mortgage_id MEDIUMINT UNSIGNED NOT NULL,
+    amount DECIMAL(8,2) NOT NULL,
+    due_date DATE NULL,
+    payment_date DATE NOT NULL,
+    FOREIGN KEY(mortgage_id) REFERENCES mortgage(id),
+    CONSTRAINT amount_is_more_than_0 CHECK (amount > 0)
+);
+```
