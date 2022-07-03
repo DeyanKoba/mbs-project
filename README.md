@@ -206,11 +206,11 @@ CREATE TABLE mortgage (
     id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     amount MEDIUMINT UNSIGNED NOT NULL,
     annual_interest_rate DECIMAL(4,2) NOT NULL,
-    property_id INT UNSIGNED NOT NULL,
-    bank_id SMALLINT UNSIGNED NOT NULL,
+    property_id MEDIUMINT UNSIGNED UNIQUE NOT NULL,
+    bank_id TINYINT UNSIGNED NOT NULL,
     date_of_signing DATE NOT NULL,
     maturity_years TINYINT unsigned NOT NULL,
-    mbs_id SMALLINT UNSIGNED NULL,
+    mbs_id TINYINT UNSIGNED NULL,
     FOREIGN KEY (property_id) REFERENCES property(id),
     FOREIGN KEY (bank_id) REFERENCES bank(id),
     FOREIGN KEY (mbs_id) REFERENCES mbs(id),
@@ -220,8 +220,8 @@ CREATE TABLE mortgage (
 );
 
 CREATE TABLE accountholder (
-    mortgage_id MEDIUMINT NOT NULL,
-    person_id MEDIUMINT NOT NULL,
+    mortgage_id MEDIUMINT UNSIGNED NOT NULL,
+    person_id MEDIUMINT UNSIGNED NOT NULL,
     FOREIGN KEY (mortgage_id) REFERENCES mortgage(id),
     FOREIGN KEY (person_id) REFERENCES person(id)
 );
@@ -273,7 +273,7 @@ BEGIN
     END IF;
 END $$
 
-CREATE TRIGGER check_payment_dates BEFORE INSERT ON mortgage_payment
+CREATE TRIGGER check_payment_dates BEFORE INSERT ON payment
 FOR EACH ROW
 BEGIN
     DECLARE mortgage_signing_date DATE;
@@ -293,7 +293,7 @@ BEGIN
 
 END $$
 
-CREATE TRIGGER mortgage_payment_not_over_total_to_pay BEFORE INSERT ON mortgage_payment
+CREATE TRIGGER mortgage_payment_not_over_total_to_pay BEFORE INSERT ON payment
 FOR EACH ROW
 BEGIN
     DECLARE extra_payments DECIMAL(9,2) DEFAULT 0;
@@ -321,7 +321,7 @@ BEGIN
     INTO
         extra_payments
     FROM
-        mortgage_payment
+        payment
     WHERE
         due_date IS NULL
         AND
@@ -336,7 +336,7 @@ BEGIN
     INTO
         total_to_pay;
 
-    SELECT SUM(amount) INTO total_payed FROM mortgage_payment WHERE mortgage_id = NEW.mortgage_id AND due_date IS NOT NULL;
+    SELECT SUM(amount) INTO total_payed FROM payment WHERE mortgage_id = NEW.mortgage_id AND due_date IS NOT NULL;
 
     IF (total_to_pay - total_payed) < NEW.amount THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The mortgage payment cannot be more than the remaining amount to pay';
@@ -353,9 +353,9 @@ DELIMITER ;
 DELIMITER $$
 
 CREATE FUNCTION get_mortgage_monthly_payment (
-    mortgage_amount int,
-    annual_interest_rate decimal(10,2),
-    years tinyint
+    mortgage_amount MEDIUMINT UNSIGNED,
+    annual_interest_rate DECIMAL(4,2),
+    years TINYINT UNSIGNED
 ) 
 RETURNS decimal(10,2) DETERMINISTIC
 BEGIN 
@@ -367,16 +367,16 @@ BEGIN
 END $$
 
 CREATE FUNCTION get_mortgage_surplus_payments_ratio (
-    p_mortgage_id int
+    p_mortgage_id MEDIUMINT UNSIGNED
 ) RETURNS decimal(5,4) DETERMINISTIC
 BEGIN
     DECLARE surplus_ratio DECIMAL(5,4) DEFAULT 0;
 
     SELECT
-        SUM(mortgage_payment.amount) / mortgage.amount
+        SUM(payment.amount) / mortgage.amount
     INTO surplus_ratio
     FROM mortgage
-        LEFT JOIN mortgage_payment ON mortgage.id = mortgage_payment.mortgage_id
+        LEFT JOIN payment ON mortgage.id = payment.mortgage_id
     WHERE
         due_date IS NULL
         AND
@@ -389,9 +389,9 @@ BEGIN
 END $$
 
 CREATE FUNCTION get_mortgage_payment_average_days_delay (
-    p_mortgage_id int
+    p_mortgage_id MEDIUMINT UNSIGNED
 )
-RETURNS decimal(5,4) DETERMINISTIC
+RETURNS DECIMAL(5,4) DETERMINISTIC
 BEGIN
     DECLARE average_delay TINYINT UNSIGNED DEFAULT 0;
 
@@ -399,7 +399,7 @@ BEGIN
         AVG(GREATEST(0, payment_date - due_date))
     INTO average_delay
     FROM mortgage 
-        LEFT JOIN mortgage_payment ON mortgage.id = mortgage_payment.mortgage_id
+        LEFT JOIN payment ON mortgage.id = payment.mortgage_id
     WHERE
         due_date IS NOT NULL
         AND
@@ -410,13 +410,13 @@ BEGIN
 END $$
 
 CREATE FUNCTION get_mortgage_monthly_payment_to_income_ratio (
-    p_mortgage_id int
+    p_mortgage_id MEDIUMINT UNSIGNED
 )
-RETURNS decimal(5,4) DETERMINISTIC
+RETURNS DECIMAL(5,4) DETERMINISTIC
 BEGIN
-    DECLARE mortgage_value INT UNSIGNED DEFAULT 0;
-    DECLARE mortgage_annual_interest_rate DECIMAL(4,2) UNSIGNED DEFAULT 0;
-    DECLARE mortgage_maturity_years TINYINT(3) UNSIGNED DEFAULT 0;
+    DECLARE mortgage_value MEDIUMINT UNSIGNED DEFAULT 0;
+    DECLARE mortgage_annual_interest_rate DECIMAL(4,2) DEFAULT 0;
+    DECLARE mortgage_maturity_years TINYINT UNSIGNED DEFAULT 0;
     DECLARE accountholders_total_monthly_income DECIMAL(7,2) DEFAULT 0;
     DECLARE monthly_payment_to_income_ratio DECIMAL (4,2) DEFAULT 0;
 
@@ -446,18 +446,18 @@ BEGIN
 END $$
 
 CREATE FUNCTION get_dates_difference_in_years(
-    past_date date,
-    future_date date
+    past_date DATE,
+    future_date DATE
 ) RETURNS INT DETERMINISTIC
 BEGIN
     RETURN TIMESTAMPDIFF(YEAR, past_date, future_date);
 END $$
 
 CREATE FUNCTION get_mortgage_amount_percentage_risk_due_to_accountholders_age(
-    p_mortgage_id int
-) RETURNS decimal(5,4) DETERMINISTIC 
+    p_mortgage_id MEDIUMINT UNSIGNED
+) RETURNS DECIMAL(5,4) DETERMINISTIC 
 BEGIN
-    DECLARE amount_at_risk decimal(5,4) UNSIGNED DEFAULT 0;
+    DECLARE amount_at_risk DECIMAL(5,4) DEFAULT 0;
 
     SELECT
         SUM(
@@ -507,10 +507,10 @@ BEGIN
 END $$
 
 CREATE FUNCTION get_mortgage_rating(
-    p_mortgage_id int
-) RETURNS char(1) DETERMINISTIC
+    p_mortgage_id MEDIUMINT UNSIGNED
+) RETURNS CHAR(1) DETERMINISTIC
 BEGIN
-    DECLARE risk_percentage decimal(5,4);
+    DECLARE risk_percentage DECIMAL(5,4);
 
     SET risk_percentage
     = 
