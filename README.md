@@ -220,8 +220,8 @@ CREATE TABLE mortgage (
 );
 
 CREATE TABLE accountholder (
-    mortgage_id MEDIUMINT NOT NULL,
-    person_id MEDIUMINT NOT NULL,
+    mortgage_id MEDIUMINT UNSIGNED NOT NULL,
+    person_id MEDIUMINT UNSIGNED NOT NULL,
     FOREIGN KEY (mortgage_id) REFERENCES mortgage(id),
     FOREIGN KEY (person_id) REFERENCES person(id)
 );
@@ -273,7 +273,7 @@ BEGIN
     END IF;
 END $$
 
-CREATE TRIGGER check_payment_dates BEFORE INSERT ON mortgage_payment
+CREATE TRIGGER check_payment_dates BEFORE INSERT ON payment
 FOR EACH ROW
 BEGIN
     DECLARE mortgage_signing_date DATE;
@@ -293,7 +293,7 @@ BEGIN
 
 END $$
 
-CREATE TRIGGER mortgage_payment_not_over_total_to_pay BEFORE INSERT ON mortgage_payment
+CREATE TRIGGER mortgage_payment_not_over_total_to_pay BEFORE INSERT ON payment
 FOR EACH ROW
 BEGIN
     DECLARE extra_payments DECIMAL(9,2) DEFAULT 0;
