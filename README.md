@@ -571,3 +571,8 @@ GROUP BY
     id,
     rating;
 ```
+
+
+## Informazioni aggiuntive
+
+È presente un file `docker-compose` che va a creare un ambiente con installato MySQL sulla porta 3306 con precaricato il dump della struttura del database con dei dati dummy e PHPMYADMIN raggiungibile tramite `localhost:8081`, assicurarsi di avere entrambe le porte libere prima di eseguire il compose.
