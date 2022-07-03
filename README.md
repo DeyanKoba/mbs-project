@@ -532,3 +532,42 @@ END $$
 
 DELIMITER ;
 ```
+
+## Query aggiuntive
+
+A questo punto con le funzioni precedentemente create risulta semplice calcolare il rating di un mutuo, ad esempio per ottenere tutti i mutui con il relativo rating risulterà sufficiente la seguente query:
+
+```
+SELECT *, get_mortgage_rating(id) FROM mortgage;
+```
+
+oppure per posso ottenere gli MBS con le suddivisioni percentuali
+
+```
+SELECT
+    id,
+    rating,
+    COUNT(rating) / total AS composition_percentage
+FROM
+    (
+    SELECT
+        t1.id,
+        get_mortgage_rating(mortgage.id) AS rating,
+        total
+    FROM
+        (
+        SELECT
+            mbs.id,
+            COUNT(*) AS total
+        FROM
+            `mbs`
+        INNER JOIN mortgage ON mbs.id = mortgage.mbs_id
+        GROUP BY
+            mbs.id
+    ) t1
+INNER JOIN mortgage ON t1.id = mortgage.mbs_id
+) t2
+GROUP BY
+    id,
+    rating;
+```
