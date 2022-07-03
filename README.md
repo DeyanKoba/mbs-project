@@ -1,17 +1,19 @@
 # Progetto per l'esame di Basi di Dati - "Mortgage Backed Securities"
 
-Università degli studi di Trieste - Corso di Laurea in Ingegneria Elettronica ed Informatica - Deyan Koba
+Università degli studi di Trieste - Corso di Laurea in Ingegneria Elettronica ed Informatica - Deyan Koba IN0500754
 <br>
 ## Introduzione
 
 Una banca d'investimento con sede negli USA richiede la realizzazione di un database per gestire i propri Mortgage Backed Securities (MBS).
-Un MBS, in breve, è un insieme di mutui raccolti in un "pacchetto", quest'ultimo viene successivamente suddiviso in quote (tranches) con diverso ROI (Return On Investment) in base al rischio e vendute al pubblico come forma d'investimento. In tal modo le banche rientrano "immediatamente" del capitale concesso in prestito ed in pratica è l'investitore finale che acquista le tranches a fornire il capitale per finanziare i mutui, ricevendo periodicamente i dividendi generati dagli interessi dei mutui.
+Un MBS, in breve, è un insieme di mutui raccolti in un "pacchetto", quest'ultimo viene successivamente suddiviso in quote (tranches) con diverso ROI (Return On Investment) in base a vari fattori tra cui rischio, tasso di interesse e durata, per essere vendute al pubblico come forma d'investimento. In tal modo le banche rientrano "immediatamente" del capitale concesso in prestito ed in pratica è l'investitore finale che acquista le tranches a fornire il capitale per finanziare i mutui, ricevendo periodicamente i dividendi generati dagli interessi dei mutui.
 <br>
 > [Mortgage Backed Security Definition](https://www.investopedia.com/terms/m/mbs.asp)<br>
-> [Tranches Definition](https://www.investopedia.com/terms/t/tranches.asp)
+> [Tranches Definition](https://www.investopedia.com/terms/t/tranches.asp)<br>
+> [Investment Bank Definition](https://www.investopedia.com/terms/i/investmentbank.asp)<br>
+> [Commercial Bank Definition](https://www.investopedia.com/terms/c/commercialbank.asp)<br>
 
 <br>
-La banca d'investimento acquista in blocco, una volta l'anno, dai 1000 ai 3000 mutui rilasciati da altre banche commerciali, ad ogni mutuo viene assegnata una valutazione del rischio che potrà essere 'A', 'B' oppure 'C';
+La banca d'investimento acquista in blocco, una volta l'anno, dai 1000 ai 3000 mutui rilasciati da altre banche commerciali che vengono successivamente inseriti in un MBS, ad ogni mutuo viene assegnata una valutazione del rischio che potrà essere <b>A</b>, <b>B</b> oppure <b>C</b>;
 
 * **A** indica un mutuo per il quale si suppone un basso rischio di insolvenza;
 * **B** indica un rischio medio;
@@ -29,7 +31,8 @@ Nel caso in cui un mutuo sia intestato a più di un soggetto e di questi solo al
 
 Il fattore di rischio è quindi calcolato nel seguente modo:
 
-**(35%** • <b>*risultato al punto 1*) + (45%</b> • <b>*risultato al punto 2*) + (10%</b> • <b>*risultato al punto 3*) + (10%</b> • <b>*risultato al punto 4*)</b>
+**(35%** • <b>*risultato al punto 1*) + (45%</b> • <b>*risultato al punto 2*) + (10%</b> • <b>*risultato al punto 3*) + (10%</b> • <b>*risultato al punto 4*)</b> <br><br>
+Per valori inferiori a 0.15 viene assegnato un rating <b>A</b>, per valori maggiori o uguali a 0.15 e inferiori a 0.20 viene assegnato un rating <b>B</b>, altrimenti <b>C</b>
 
 Ogni MBS in una situazione "normale" è composto nel seguente modo:
 
@@ -42,7 +45,7 @@ Di un intestatario si hanno a disposizione nome, cognome, data di nascita, salar
 Di una proprietà si ha il valore e l'indirizzo, mentre di una banca si ha nome ed indirizzo.
 Per quanto riguarda i pagamenti si ha a disposizione l'importo del versamento, la data del versamento ed eventualmente una data di scadenza nel caso in cui il versamento faccia riferimento ad una rata.
 
-## Azioni eseguibili sul database
+## Azioni che devono essere eseguibili sul database
 
 1. Inserire un mutuo acquistato ed i dati correlati ad esso, ovvero:
     * storico dei pagamenti
@@ -52,6 +55,9 @@ Per quanto riguarda i pagamenti si ha a disposizione l'importo del versamento, l
 2. Calcolare il rating di un mutuo
 3. Assegnare un mutuo ad un MBS
 4. Ottenere la composizione percentuale suddivisa per rischio di un MBS
+5. Ottenere la lista dei mutui presenti in database con il relativo rating che non sono ancora stati assegnati ad un MBS 
+
+Tutte queste azioni vengono eseguite all'incirca 1 o 2 volte l'anno.
 
 ## Schema Entity-Relationship
 
@@ -70,17 +76,17 @@ Dalla banca d'investimenti ci vengono fornire le seguenti informazioni:
 <br>
 Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mutui andiamo a stimare le dimensioni del database:<br><br>
 
-| Entità | Numero di entità inserite ogni anno | Note |
-| ------ | ----------------------------------- | ---- |
-| Mortgage | 2000 |  |
-| Property | 2000 | Una proprietà per mutuo |
-| Mortgage Payment | 60000 | In base alle dichiarazioni l'età media del mutuo al momento dell'acquisto si aggira attorno ai 2-3 anni;<br>in questo caso si è presa in considerazione una durata di 30 mesi, moltiplicata per i 2000 mutui<br>porta a 60000 pagamenti ordinari |
-| Surplus Payment | 400 | 80% di 2000 mutui = 1600 mutui di classe A<br>10% di probabilità che un mutuo di classe A effettui un pagamento in surplus = 160 mutui effettuano pagamenti in surplus<br>1 versamento l'anno di media su una durata media di 30 mesi = 400 versamenti in surplus |
-| Person | 2300 | 85% di 2000 = 1700 mutui intestati ad una persona<br>15% di 2000 = 300 mutui intestati a due persone |
-| Bank | 20 |  |
-| MBS | 1 |  |
-| Location | 40000 | Location accoglie al suo interno i vari ZIP Codes con la relativa città e stato, negli USA questi sono circa 40000 |
-| Accountholder | 2300 |  |
+| Entità | Numero di entità inserite ogni anno | Tipologia | Note |
+| ------ | ----------------------------------- | ---- |---- |
+| Mortgage | 2000 | E | |
+| Property | 2000 | E | Una proprietà per mutuo |
+| Mortgage Payment | 60000 | E | In base alle dichiarazioni l'età media del mutuo al momento dell'acquisto si aggira attorno ai 2-3 anni;<br>in questo caso si è presa in considerazione una durata di 30 mesi, moltiplicata per i 2000 mutui<br>porta a 60000 pagamenti ordinari |
+| Surplus Payment | 400 | E | 80% di 2000 mutui = 1600 mutui di classe A<br>10% di probabilità che un mutuo di classe A effettui un pagamento in surplus = 160 mutui effettuano pagamenti in surplus<br>1 versamento l'anno di media su una durata media di 30 mesi = 400 versamenti in surplus |
+| Person | 2300 | E | 85% di 2000 = 1700 mutui intestati ad una persona<br>15% di 2000 = 300 mutui intestati a due persone |
+| Bank | 20 | E |  |
+| MBS | 1 | E |  |
+| Location | 40000 | E | Location accoglie al suo interno i vari ZIP Codes con la relativa città e stato, negli USA questi sono circa 40000 |
+| Accountholder | 2300 | R |  |
 
 ## Ristrutturazione Schema ER
 
