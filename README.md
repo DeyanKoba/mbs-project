@@ -321,7 +321,7 @@ BEGIN
     INTO
         extra_payments
     FROM
-        mortgage_payment
+        payment
     WHERE
         due_date IS NULL
         AND
@@ -336,7 +336,7 @@ BEGIN
     INTO
         total_to_pay;
 
-    SELECT SUM(amount) INTO total_payed FROM mortgage_payment WHERE mortgage_id = NEW.mortgage_id AND due_date IS NOT NULL;
+    SELECT SUM(amount) INTO total_payed FROM payment WHERE mortgage_id = NEW.mortgage_id AND due_date IS NOT NULL;
 
     IF (total_to_pay - total_payed) < NEW.amount THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The mortgage payment cannot be more than the remaining amount to pay';
