@@ -4,26 +4,21 @@ CREATE DATABASE mbs_project_2022;
 
 USE mbs_project_2022;
 
-DROP TABLE IF EXISTS person;
 CREATE TABLE person (
     id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     surname VARCHAR(255) NOT NULL,
     birthdate DATE NOT NULL,
     employment VARCHAR(255),
-    annual_salary MEDIUMINT unsigned NOT NULL,
-    CONSTRAINT is_over_18 CHECK TIMESTAMPDIFF(YEAR, birthdate, curdate()) >= 18,
-    CONSTRAINT is_less_than_100 CHECK TIMESTAMPDIFF(YEAR, birthdate, curdate()) < 100
+    annual_salary MEDIUMINT unsigned NOT NULL
 );
 
-DROP TABLE IF EXISTS location;
 CREATE TABLE location (
     zip_code VARCHAR(5) PRIMARY KEY,
     city VARCHAR(255) NOT NULL,
     state VARCHAR(255) NOT NULL
 );
 
-DROP TABLE IF EXISTS bank;
 CREATE TABLE bank (
     id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -33,7 +28,6 @@ CREATE TABLE bank (
     FOREIGN KEY(zip_code) REFERENCES location(zip_code)
 );
 
-DROP TABLE IF EXISTS property;
 CREATE TABLE property (
     id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     street_name VARCHAR(255) NOT NULL,
@@ -43,13 +37,11 @@ CREATE TABLE property (
     FOREIGN KEY(zip_code) REFERENCES location(zip_code)
 );
 
-DROP TABLE IF EXISTS mbs;
 CREATE TABLE mbs (
     id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
 
-DROP TABLE IF EXISTS mortgage;
 CREATE TABLE mortgage (
     id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     amount MEDIUMINT UNSIGNED NOT NULL,
@@ -67,7 +59,6 @@ CREATE TABLE mortgage (
     CONSTRAINT annual_interest_rate_is_more_than_0 CHECK (annual_interest_rate > 0)
 );
 
-DROP TABLE IF EXISTS accountholder;
 CREATE TABLE accountholder (
     mortgage_id MEDIUMINT NOT NULL,
     person_id MEDIUMINT NOT NULL,
@@ -75,11 +66,10 @@ CREATE TABLE accountholder (
     FOREIGN KEY (person_id) REFERENCES person(id)
 );
 
-DROP TABLE IF EXISTS payment;
 CREATE TABLE payment (
     id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     mortgage_id MEDIUMINT UNSIGNED NOT NULL,
-    amount DECIMAL(8,2) NOT NULL,
+    amount DECIMAL(7,2) NOT NULL,
     due_date DATE NULL,
     payment_date DATE NOT NULL,
     FOREIGN KEY(mortgage_id) REFERENCES mortgage(id),
@@ -87,6 +77,14 @@ CREATE TABLE payment (
 );
 
 DELIMITER $$
+
+CREATE TRIGGER check_person_age BEFORE INSERT ON person
+FOR EACH ROW
+BEGIN
+    IF TIMESTAMPDIFF(YEAR, NEW.birthdate, curdate()) < 18 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The person must be at least 18 years old';
+    END IF;
+END $$
 
 CREATE TRIGGER check_mortgage_amount BEFORE INSERT ON mortgage
 FOR EACH ROW
