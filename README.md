@@ -116,10 +116,10 @@ Da un'analisi del problema posto sorgono dei vincoli che non sono esprimibili gr
 * Il versamento per un mutuo non può eccedere la parte rimanente da saldare;
 * Il tasso di interesse non può essere negativo;
 
-Per realizzare il vincolo sulla maggiore età di un intestatario è necessario ricorrere ad un trigger in quanto i CHECK non possono utilizzare al loro interno funzioni non deterministiche (in questo caso curdate()), così come per i check sulla data di stipulazione del mutuo e sulle date dei pagamenti.
+Per realizzare il vincolo sulla maggiore età di un intestatario è necessario ricorrere ad un trigger in quanto i CHECK non possono utilizzare al loro interno funzioni non deterministiche (in questo caso `curdate()`), così come per i check sulla data di stipulazione del mutuo e sulle date dei pagamenti.
 Allo stesso modo per realizzare il check sul valore dell'immobile e per il check sull'importo del versamento è necessario ricorrere alle relazioni con i dati correlati per le quali è necessario ricorrere ad un trigger.
 
-Per il vincolo sul tasso di interesse è necessario utilizzare un CHECK in quanto in MySQL il constraint UNSIGNED per gli attributi di tipo decimal è deprecato.
+Per il vincolo sul tasso di interesse è necessario utilizzare un `CHECK` in quanto in MySQL il constraint `UNSIGNED` per gli attributi di tipo decimal è deprecato.
 > [WL#12391: Deprecate unsigned attribute for DECIMAL and FLOAT data types](https://dev.mysql.com/worklog/task/?id=12391)
 
 <br>
@@ -149,14 +149,14 @@ Per quanto riguarda annual\_interest\_rate è stato scelto di adottare `DECIMAL(
 ![ER Ristrutturato](documentation/ER-restructured.svg)
 
 ## Passaggio al modello relazionale
-Per permettere l'inserimento di un solo mutuo per immobile si va ad impostare un constraint di tipo `UNIQUE` sull'attribute property_id che è chiave esterna con riferimento a Property.id <br>
+Per permettere l'inserimento di un solo mutuo per immobile si va ad impostare un constraint di tipo `UNIQUE` sull'attribute property_id che è chiave esterna con riferimento a `Property.id` <br>
 
 ## Schema logico
 ![ERD](documentation/ERD.svg)
 
 ## Creazione fisica
 
-### Query per la creazione
+### Query per la creazione delle tabelle assieme ai check base
 ```
 DROP DATABASE IF EXISTS mbs_project_2022;
 
@@ -235,4 +235,114 @@ CREATE TABLE payment (
     FOREIGN KEY(mortgage_id) REFERENCES mortgage(id),
     CONSTRAINT amount_is_more_than_0 CHECK (amount > 0)
 );
+```
+
+### Query per la creazione dei trigger
+
+```
+DELIMITER $$
+
+CREATE TRIGGER check_person_age BEFORE INSERT ON person
+FOR EACH ROW
+BEGIN
+    IF TIMESTAMPDIFF(YEAR, NEW.birthdate, curdate()) < 18 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The person must be at least 18 years old';
+    END IF;
+END $$
+
+CREATE TRIGGER check_mortgage_amount BEFORE INSERT ON mortgage
+FOR EACH ROW
+BEGIN
+    DECLARE property_value INT;
+    SELECT value INTO property_value FROM property WHERE id = NEW.property_id;
+    
+    IF NEW.amount > property_value THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Mortgage value cannot be more than the property value';
+    END IF;
+END $$
+
+CREATE TRIGGER check_mortgage_date_of_signing BEFORE INSERT ON mortgage
+FOR EACH ROW
+BEGIN
+    IF TIMESTAMPDIFF(DAY, NEW.date_of_signing, curdate()) < 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Mortgage signing date cannot be in the future';
+    END IF;
+
+    IF TIMESTAMPDIFF(MONTH, NEW.date_of_signing, curdate()) > 61 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot insert a mortgage older than 5 years';
+    END IF;
+END $$
+
+CREATE TRIGGER check_payment_dates BEFORE INSERT ON mortgage_payment
+FOR EACH ROW
+BEGIN
+    DECLARE mortgage_signing_date DATE;
+    SELECT date_of_signing INTO mortgage_signing_date FROM mortgage WHERE id = NEW.mortgage_id;
+
+    IF NEW.due_date IS NOT NULL AND NEW.due_date < mortgage_signing_date THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'A payment due date cannot be before the mortgage signing date';
+    END IF;
+
+    IF NEW.payment_date < mortgage_signing_date THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'A payment cannot be made before the mortgage signing date';
+    END IF;
+
+    IF NEW.payment_date > curdate() THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'A mortgage payment cannot be made in a date in the future';
+    END IF;
+
+END $$
+
+CREATE TRIGGER mortgage_payment_not_over_total_to_pay BEFORE INSERT ON mortgage_payment
+FOR EACH ROW
+BEGIN
+    DECLARE extra_payments DECIMAL(9,2) DEFAULT 0;
+    DECLARE total_to_pay DECIMAL(9,2) DEFAULT 0;
+    DECLARE total_payed DECIMAL(9,2) DEFAULT 0;
+    DECLARE mortgage_amount INT DEFAULT 0;
+    DECLARE mortgage_annual_interest_rate DECIMAL(4,2) DEFAULT 0;
+    DECLARE mortgage_maturity_years TINYINT UNSIGNED DEFAULT 0;
+
+    SELECT 
+        amount,
+        annual_interest_rate,
+        maturity_years
+    INTO
+        mortgage_amount,
+        mortgage_annual_interest_rate,
+        mortgage_maturity_years
+    FROM
+        mortgage
+    WHERE
+        id = NEW.mortgage_id;
+
+    SELECT
+        COALESCE(SUM(amount), 0)
+    INTO
+        extra_payments
+    FROM
+        mortgage_payment
+    WHERE
+        due_date IS NULL
+        AND
+        mortgage_id = NEW.mortgage_id;
+
+    SELECT
+        get_mortgage_monthly_payment(mortgage_amount - extra_payments, mortgage_annual_interest_rate, mortgage_maturity_years)
+        *
+        12
+        *
+        mortgage_maturity_years
+    INTO
+        total_to_pay;
+
+    SELECT SUM(amount) INTO total_payed FROM mortgage_payment WHERE mortgage_id = NEW.mortgage_id AND due_date IS NOT NULL;
+
+    IF (total_to_pay - total_payed) < NEW.amount THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The mortgage payment cannot be more than the remaining amount to pay';
+    END IF;
+
+END $$
+
+DELIMITER ;
 ```
