@@ -210,7 +210,7 @@ CREATE TABLE mortgage (
     bank_id TINYINT UNSIGNED NOT NULL,
     date_of_signing DATE NOT NULL,
     maturity_years TINYINT unsigned NOT NULL,
-    mbs_id SMALLINT UNSIGNED NULL,
+    mbs_id TINYINT UNSIGNED NULL,
     FOREIGN KEY (property_id) REFERENCES property(id),
     FOREIGN KEY (bank_id) REFERENCES bank(id),
     FOREIGN KEY (mbs_id) REFERENCES mbs(id),
