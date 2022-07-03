@@ -373,7 +373,7 @@ BEGIN
     DECLARE surplus_ratio DECIMAL(5,4) DEFAULT 0;
 
     SELECT
-        SUM(mortgage_payment.amount) / mortgage.amount
+        SUM(payment.amount) / mortgage.amount
     INTO surplus_ratio
     FROM mortgage
         LEFT JOIN payment ON mortgage.id = payment.mortgage_id
@@ -391,7 +391,7 @@ END $$
 CREATE FUNCTION get_mortgage_payment_average_days_delay (
     p_mortgage_id MEDIUMINT UNSIGNED
 )
-RETURNS decimal(5,4) DETERMINISTIC
+RETURNS DECIMAL(5,4) DETERMINISTIC
 BEGIN
     DECLARE average_delay TINYINT UNSIGNED DEFAULT 0;
 
