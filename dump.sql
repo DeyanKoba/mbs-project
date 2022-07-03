@@ -97,14 +97,14 @@ BEGIN
     END IF;
 END $$
 
-CREATE TRIGGER check mortgage_date_of_signing BEFORE INSERT ON mortgage
+CREATE TRIGGER check_mortgage_date_of_signing BEFORE INSERT ON mortgage
 FOR EACH ROW
 BEGIN
     IF TIMESTAMPDIFF(DAY, NEW.date_of_signing, curdate()) < 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Mortgage signing date cannot be in the future';
     END IF;
 
-    IF TIMESTAMPDIFF(YEAR, NEW.date_of_signing, curdate()) > 5 THEN
+    IF TIMESTAMPDIFF(MONTH, NEW.date_of_signing, curdate()) > 61 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot insert a mortgage older than 5 years';
     END IF;
 END $$
@@ -112,7 +112,7 @@ END $$
 CREATE TRIGGER check_payment_dates BEFORE INSERT ON mortgage_payment
 FOR EACH ROW
 BEGIN
-    DECLARE mortgage_signing_date date;
+    DECLARE mortgage_signing_date DATE;
     SELECT date_of_signing INTO mortgage_signing_date FROM mortgage WHERE id = NEW.mortgage_id;
 
     IF NEW.due_date IS NOT NULL AND NEW.due_date < mortgage_signing_date THEN
