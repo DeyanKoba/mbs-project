@@ -206,7 +206,7 @@ CREATE TABLE mortgage (
     id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     amount MEDIUMINT UNSIGNED NOT NULL,
     annual_interest_rate DECIMAL(4,2) NOT NULL,
-    property_id INT UNSIGNED NOT NULL,
+    property_id MEDIUMINT UNSIGNED NOT NULL,
     bank_id SMALLINT UNSIGNED NOT NULL,
     date_of_signing DATE NOT NULL,
     maturity_years TINYINT unsigned NOT NULL,
