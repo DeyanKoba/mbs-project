@@ -170,9 +170,7 @@ CREATE TABLE person (
     surname VARCHAR(255) NOT NULL,
     birthdate DATE NOT NULL,
     employment VARCHAR(255),
-    annual_salary MEDIUMINT unsigned NOT NULL,
-    CONSTRAINT is_over_18 CHECK TIMESTAMPDIFF(YEAR, birthdate, curdate()) >= 18,
-    CONSTRAINT is_less_than_100 CHECK TIMESTAMPDIFF(YEAR, birthdate, curdate()) < 100
+    annual_salary MEDIUMINT unsigned NOT NULL
 );
 
 CREATE TABLE location (
@@ -231,7 +229,7 @@ CREATE TABLE accountholder (
 CREATE TABLE payment (
     id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     mortgage_id MEDIUMINT UNSIGNED NOT NULL,
-    amount DECIMAL(8,2) NOT NULL,
+    amount DECIMAL(7,2) NOT NULL,
     due_date DATE NULL,
     payment_date DATE NOT NULL,
     FOREIGN KEY(mortgage_id) REFERENCES mortgage(id),
