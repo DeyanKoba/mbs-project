@@ -87,6 +87,12 @@ Con queste informazioni, tenendo in considerazione un acquisto medio di 2000 mut
 | MBS | 1 | E |  |
 | Location | 40000 | E | Location accoglie al suo interno i vari ZIP Codes con la relativa città e stato, negli USA questi sono circa 40000 |
 | Accountholder | 2300 | R |  |
+| Whereabouts | 2020 | R | Una per ogni immobile e per banca |
+| Borrower | 2300 | R | Una per ogni persona |
+| Collateral | 200 | R | Una per ogni mutuo con la relativa proprietà associata |
+| Issuing | 2000 | R | Una per ogni mutuo emesso |
+| Transaction | 60400 | R | Una transazione per ogni pagamento |
+| Assignment | 2000 | R | Una per ogni mutuo |
 
 ## Ristrutturazione Schema ER
 
